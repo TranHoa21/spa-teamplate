@@ -8,7 +8,7 @@ const products = [
     {
         id: 1,
         name: 'Ốp lưng vẽ chân dung',
-        image: '/images/1.webp',
+        image: '/images/1.WebP',
         price: '199.000đ',
         originalPrice: '249.000đ',
         sale: true,
@@ -18,7 +18,7 @@ const products = [
     {
         id: 2,
         name: 'Túi tote vẽ chân dung',
-        image: '/images/2.webp',
+        image: '/images/2.WebP',
         price: '249.000đ',
         sale: false,
         rating: 4,
@@ -27,7 +27,7 @@ const products = [
     {
         id: 3,
         name: 'Cốc sứ vẽ chân dung',
-        image: '/images/3.webp',
+        image: '/images/3.WebP',
         price: '179.000đ',
         originalPrice: '229.000đ',
         sale: true,
