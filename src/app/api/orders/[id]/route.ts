@@ -7,7 +7,6 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
         const order = await prisma.order.findUnique({
             where: { id: params.id },
             include: {
-                user: true,
                 designRequest: true,
             },
         });
