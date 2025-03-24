@@ -19,9 +19,9 @@ export default function BannerSection() {
             if (window.innerWidth < 768) {
                 setBgImage("/images/Mobile.WebP");
             } else if (window.innerWidth < 1024) {
-                setBgImage("/images/Tablet.WebP");
+                setBgImage("/images/Tablet.webp");
             } else {
-                setBgImage("/images/desktop.WebP");
+                setBgImage("/images/desktop.webp");
             }
         };
 

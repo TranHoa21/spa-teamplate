@@ -1,4 +1,4 @@
-@media (max-width: 425px) {
+@media (max-width: 525px) {
     #hero {
         margin-top: 60px; /* Đẩy xuống để tránh bị header che */
     }
