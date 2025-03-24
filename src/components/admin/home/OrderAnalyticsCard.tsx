@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { icons } from "@/app/data/icon";
+import { icons } from "@/lib/data/icon";
 import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
 import Image from 'next/image';
 
