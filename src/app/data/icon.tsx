@@ -19,7 +19,6 @@ interface IconMap {
     star: ReactNode;
 }
 
-// Xuất các biểu tượng
 export const icons: IconMap = {
     home: <FaHome />,
     user: <FaUser />,
@@ -36,3 +35,4 @@ export const icons: IconMap = {
     shop: <FaStore />,
     star: <FaStar />,
 };
+export default icons;
