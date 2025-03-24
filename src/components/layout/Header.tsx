@@ -8,13 +8,15 @@ export default function Header() {
 
   const navItems = [
     { name: 'Trang chủ', href: '/' },
-    { name: 'Thư viện', href: '/san-pham' },
+    { name: 'Sản phẩm', href: '/san-pham' },
     { name: 'Quy trình', href: '/quy-trinh' },
     { name: 'Tại sao chọn', href: '/vi-sao-chon-chung-toi' },
+    { name: 'Blog', href: '/blog' },
+
   ];
 
   return (
-    <header className="bg-[#F5F5DC] text-[#2A2A2A] shadow-md fixed w-full top-0 left-0 z-50">
+    <header className="bg-[#ffff] text-[#2A2A2A] shadow-md fixed w-full top-0 left-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold tracking-wide text-[#FF6B6B]">

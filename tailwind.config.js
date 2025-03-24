@@ -14,6 +14,10 @@ module.exports = {
                 body: ['Inter', 'sans-serif'],
                 handwriting: ['"Dancing Script"', 'cursive'],
             },
+            screens: {
+                'xs': '320px', // Breakpoint mới cho màn hình nhỏ
+                'xm': '375px', // Breakpoint mới cho iPhone X, SE
+            },
         },
     },
 }

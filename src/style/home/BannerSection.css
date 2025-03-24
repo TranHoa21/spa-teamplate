@@ -1,0 +1,25 @@
+@media (max-width: 425px) {
+    #hero {
+        margin-top: 60px; /* Đẩy xuống để tránh bị header che */
+    }
+
+    #hero .max-w-6xl {
+        padding-left: 10px; /* Căn sát trái */
+        padding-right: 10px; /* Tránh bị dính sát mép */
+    }
+
+    #hero h1 {
+        font-size: 16px; /* Giảm kích thước chữ */
+        line-height: 1.4;
+    }
+
+    #hero p {
+        font-size: 12px;
+        width: 60%; /* Chiếm hết chiều ngang để không bị giới hạn */
+    }
+
+    #hero button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}

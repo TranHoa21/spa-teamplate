@@ -95,6 +95,7 @@ export default function ProductDetailPage() {
     const [font, setFont] = useState('');
     const [printName, setPrintName] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [designType, setDesignType] = useState<'self' | 'request'>('request');
 
     const handleQuantityChange = (value: number) => {
         setQuantity(Math.max(1, value));
@@ -112,11 +113,12 @@ export default function ProductDetailPage() {
         const orderData = {
             productName: product?.name || '',
             imageUrl: imagePreview,
-            drawStyle,
-            font,
-            printName,
+            drawStyle: designType === 'request' ? drawStyle : 'In theo ảnh gốc',
+            font: designType === 'request' ? font : '',
+            printName: designType === 'request' ? printName : '',
             quantity,
             price: product?.price || '',
+            designType,
         };
         localStorage.setItem('orderData', JSON.stringify(orderData));
         router.push('/checkout');
@@ -138,52 +140,92 @@ export default function ProductDetailPage() {
                     <div className="text-lg text-[#FF6B6B] font-semibold">
                         {product.price.toLocaleString()}đ{' '}
                         {product.originalPrice && (
-                            <span className="text-sm text-gray-400 line-through ml-2">{product.originalPrice.toLocaleString()}đ</span>
+                            <span className="text-sm text-gray-400 line-through ml-2">
+                                {product.originalPrice.toLocaleString()}đ
+                            </span>
                         )}
                     </div>
 
+                    {/* Lựa chọn loại thiết kế */}
+                    <div className="space-y-2">
+                        <Label>Bạn muốn:</Label>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="designType"
+                                    value="self"
+                                    checked={designType === 'self'}
+                                    onChange={() => setDesignType('self')}
+                                />
+                                Tự thiết kế (chúng tôi in theo ảnh bạn gửi)
+                            </label>
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="designType"
+                                    value="request"
+                                    checked={designType === 'request'}
+                                    onChange={() => setDesignType('request')}
+                                />
+                                Nhờ chúng tôi thiết kế (vẽ tay theo ảnh)
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Upload ảnh */}
                     <div className="space-y-1">
-                        <Label>Tải ảnh chân dung *</Label>
+                        <Label>Gửi ảnh chân dung *</Label>
                         <Input type="file" accept="image/*" onChange={handleImageChange} />
                         {imagePreview && (
                             <Image src={imagePreview} alt="Preview" width={200} height={200} className="rounded-lg mt-2 border" />
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Chọn font chữ (nếu muốn in tên)</Label>
-                        <select
-                            className="w-full border rounded px-3 py-2"
-                            value={font}
-                            onChange={(e) => setFont(e.target.value)}
-                        >
-                            <option value="">Không in tên</option>
-                            <option value="Font viết tay">Font viết tay</option>
-                            <option value="Font dễ thương">Font dễ thương</option>
-                            <option value="Font hiện đại">Font hiện đại</option>
-                        </select>
+                    {/* Nếu chọn nhờ thiết kế thì hiện thêm các tùy chọn */}
+                    {designType === 'request' && (
+                        <>
+                            <div className="space-y-2">
+                                <Label>Chọn font chữ (nếu muốn in tên)</Label>
+                                <select
+                                    className="w-full border rounded px-3 py-2"
+                                    value={font}
+                                    onChange={(e) => setFont(e.target.value)}
+                                >
+                                    <option value="">Không in tên</option>
+                                    <option value="Font viết tay">Font viết tay</option>
+                                    <option value="Font dễ thương">Font dễ thương</option>
+                                    <option value="Font hiện đại">Font hiện đại</option>
+                                </select>
 
-                        <Label className="mt-4 block">Chọn kiểu vẽ</Label>
-                        <div className="flex gap-3">
-                            {['Màu', 'Trắng đen', 'Chibi'].map((style) => (
-                                <label key={style} className="flex items-center gap-1">
-                                    <input
-                                        type="radio"
-                                        name="style"
-                                        value={style}
-                                        checked={drawStyle === style}
-                                        onChange={() => setDrawStyle(style)}
-                                    />
-                                    {style}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
+                                <Label className="mt-4 block">Chọn kiểu vẽ</Label>
+                                <div className="flex gap-3">
+                                    {['Màu', 'Trắng đen', 'Chibi'].map((style) => (
+                                        <label key={style} className="flex items-center gap-1">
+                                            <input
+                                                type="radio"
+                                                name="style"
+                                                value={style}
+                                                checked={drawStyle === style}
+                                                onChange={() => setDrawStyle(style)}
+                                            />
+                                            {style}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
 
-                    <div className="space-y-1">
-                        <Label>Lời nhắn / tên in (nếu có)</Label>
-                        <Input type="text" placeholder="VD: Tặng mẹ yêu" value={printName} onChange={(e) => setPrintName(e.target.value)} />
-                    </div>
+                            <div className="space-y-1">
+                                <Label>Lời nhắn / tên in (nếu có)</Label>
+                                <Input
+                                    type="text"
+                                    placeholder="VD: Tặng mẹ yêu"
+                                    value={printName}
+                                    onChange={(e) => setPrintName(e.target.value)}
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <div className="flex items-center gap-3">
                         <Label>Số lượng</Label>
@@ -196,10 +238,7 @@ export default function ProductDetailPage() {
                         />
                     </div>
 
-                    <Button
-                        className="bg-[#FF6B6B] text-white hover:bg-[#e95b5b] rounded-full px-6 py-2"
-                        onClick={handleOrderNow}
-                    >
+                    <Button className="bg-[#FF6B6B] text-white hover:bg-[#e95b5b] rounded-full px-6 py-2" onClick={handleOrderNow}>
                         Đặt hàng ngay
                     </Button>
 
