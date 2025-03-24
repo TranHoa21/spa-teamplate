@@ -12,6 +12,7 @@ export default function Header() {
     { name: 'Quy trình', href: '/quy-trinh' },
     { name: 'Tại sao chọn', href: '/vi-sao-chon-chung-toi' },
     { name: 'Blog', href: '/blog' },
+    { name: 'admin', href: '/login' },
 
   ];
 
