@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { icons } from "@/app/data/icon";
 import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
+import Image from 'next/image';
 
 const OrderAnalyticsCard = () => {
     const [totalOrders, setTotalOrders] = useState(0);
     const [percentIncrease, setPercentIncrease] = useState(0);
-    const [orderData, setOrderData] = useState<number[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,7 +41,6 @@ const OrderAnalyticsCard = () => {
 
                 setTotalOrders(totalOrdersInCurrentMonth);
                 setPercentIncrease(percentIncrease);
-                setOrderData(Array(8).fill(0)); // Dữ liệu giả định cho biểu đồ
 
             } catch (error) {
                 console.error("Error fetching order data:", error);
@@ -74,7 +73,7 @@ const OrderAnalyticsCard = () => {
                     percent={2.6}
                     total={714000}
                     color="secondary"
-                    icon={<img alt="icon" src="/assets/icons/order/ic-order.svg" className="w-6 h-6" />}
+                    icon={<Image alt="icon" src="/assets/icons/order/ic-order.svg" width={24} height={24} className="w-6 h-6" />}
                     chart={{
                         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
                         series: [56, 47, 40, 62, 73, 30, 23, 54],

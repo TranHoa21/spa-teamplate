@@ -50,12 +50,19 @@ model Order {
   status        OrderStatus   @default(PENDING)
   createdAt     DateTime      @default(now())
 
-  // ✅ Thêm các trường thông tin khách hàng:
+  // Thông tin khách hàng
   name          String
-  email         String
   phone         String
-  address       String?
+  email         String
+  address       String
   paymentMethod String
+
+  // Dành cho trường hợp khách chọn nhờ thiết kế
+  designType    String
+  drawStyle     String?     // Kiểu vẽ: Màu, trắng đen...
+  font          String?     // Font chữ
+  customText    String?     // Tên in, lời nhắn
+  imageUrl      String      // Link ảnh khách gửi
 
   designRequest DesignRequest?
   notifications Notification[]

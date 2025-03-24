@@ -29,29 +29,45 @@ export async function POST(req: Request) {
             productId,
             quantity,
             totalPrice,
+            imageUrl,
+            drawStyle,
+            font,
+            customText,
+            designType,
         } = data;
 
-        if (!name || !email || !phone || !productId || !quantity || !totalPrice) {
-            return NextResponse.json({ error: "Thiếu thông tin đơn hàng" }, { status: 400 });
+        // Kiểm tra các trường bắt buộc
+        if (!name || !email || !phone || !address || !paymentMethod || !productId || !quantity || !totalPrice || !imageUrl || !designType) {
+            return NextResponse.json(
+                { error: "Thiếu thông tin bắt buộc của đơn hàng." },
+                { status: 400 }
+            );
         }
 
         const newOrder = await prisma.order.create({
             data: {
                 name,
-                email,
                 phone,
+                email,
                 address,
                 paymentMethod,
                 productId,
                 quantity,
                 totalPrice,
-                status: "PENDING",
+                imageUrl,
+                drawStyle: drawStyle || null,
+                font: font || null,
+                customText: customText || null,
+                designType,
             },
         });
 
         return NextResponse.json({ success: true, order: newOrder }, { status: 201 });
     } catch (err) {
         console.error("Lỗi tạo đơn hàng:", err);
-        return NextResponse.json({ error: "Lỗi khi tạo đơn hàng" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Lỗi khi tạo đơn hàng" },
+            { status: 500 }
+        );
     }
 }

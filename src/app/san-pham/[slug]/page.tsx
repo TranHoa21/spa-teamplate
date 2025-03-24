@@ -111,13 +111,14 @@ export default function ProductDetailPage() {
 
     const handleOrderNow = () => {
         const orderData = {
+            productId: product?.slug || '', // 👈 slug giả định là ID, nếu có ID thật thì sửa lại
             productName: product?.name || '',
-            imageUrl: imagePreview,
-            drawStyle: designType === 'request' ? drawStyle : 'In theo ảnh gốc',
+            imageUrl: imagePreview ?? '',
+            drawStyle: designType === 'request' ? drawStyle : '',
             font: designType === 'request' ? font : '',
-            printName: designType === 'request' ? printName : '',
+            customText: designType === 'request' ? printName : '',
             quantity,
-            price: product?.price || '',
+            price: product?.price || 0,
             designType,
         };
         localStorage.setItem('orderData', JSON.stringify(orderData));

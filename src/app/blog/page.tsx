@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const blogs = [
     {
@@ -30,9 +31,11 @@ export default function BlogPage() {
                         href={`/blog/${post.slug}`}
                         className="bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden"
                     >
-                        <img
+                        <Image
                             src={post.thumbnail}
                             alt={post.title}
+                            width={600}
+                            height={224}
                             className="w-full h-56 object-cover"
                         />
                         <div className="p-4 space-y-2">

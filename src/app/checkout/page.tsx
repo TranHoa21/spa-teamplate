@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type OrderData = {
     productId: string;
@@ -11,6 +12,7 @@ type OrderData = {
     customText: string;
     quantity: number;
     price: number;
+    designType: string;
 };
 
 type CustomerInfo = {
@@ -49,6 +51,11 @@ export default function CheckoutPage() {
             productId: orderData.productId,
             quantity: orderData.quantity,
             totalPrice: orderData.price * orderData.quantity,
+            imageUrl: orderData.imageUrl,
+            drawStyle: orderData.drawStyle,
+            font: orderData.font,
+            customText: orderData.customText,
+            designType: orderData.designType,
         };
 
         try {
@@ -87,9 +94,11 @@ export default function CheckoutPage() {
                     <h1 className="text-2xl font-bold">Xác nhận đơn hàng</h1>
 
                     <div className="flex gap-4 border rounded-xl p-4 shadow-sm bg-gray-50">
-                        <img
+                        <Image
                             src={orderData.imageUrl}
                             alt="Product"
+                            width={96}
+                            height={96}
                             className="w-24 h-24 object-cover rounded-lg border"
                         />
                         <div className="text-sm space-y-1">

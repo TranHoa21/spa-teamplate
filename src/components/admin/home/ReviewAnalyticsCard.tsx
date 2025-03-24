@@ -8,7 +8,6 @@ import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
 const ReviewAnalyticsCard = () => {
     const [totalReviews, setTotalReviews] = useState(0);
     const [percentIncrease, setPercentIncrease] = useState(0);
-    const [reviewData, setReviewData] = useState<number[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,7 +40,6 @@ const ReviewAnalyticsCard = () => {
 
                 setTotalReviews(totalReviewsInCurrentMonth);
                 setPercentIncrease(percentIncrease);
-                setReviewData(Array(8).fill(0)); // Dữ liệu giả định cho biểu đồ
 
             } catch (error) {
                 console.error("Error fetching review data:", error);
