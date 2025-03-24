@@ -1,5 +1,10 @@
-// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+    content: [
+        "./pages/**/*.{js,ts,jsx,tsx}",
+        "./components/**/*.{js,ts,jsx,tsx}",
+        "./app/**/*.{js,ts,jsx,tsx}",
+    ],
     theme: {
         extend: {
             colors: {
@@ -15,9 +20,10 @@ module.exports = {
                 handwriting: ['"Dancing Script"', 'cursive'],
             },
             screens: {
-                'xs': '320px', // Breakpoint mới cho màn hình nhỏ
-                'xm': '375px', // Breakpoint mới cho iPhone X, SE
+                'xs': '320px',
+                'xm': '375px',
             },
         },
     },
-}
+    plugins: [],
+};
