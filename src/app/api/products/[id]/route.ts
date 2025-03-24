@@ -1,28 +1,42 @@
-// app/api/products/[id]/route.ts
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Lấy sản phẩm theo ID
+export async function GET(req: NextRequest) {
     try {
+        const url = new URL(req.url);
+        const id = url.pathname.split('/').pop(); // Lấy ID từ URL
+
+        if (!id) {
+            return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
+        }
+
         const product = await prisma.product.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!product) {
             return NextResponse.json({ error: 'Sản phẩm không tồn tại' }, { status: 404 });
         }
 
-        return NextResponse.json(product);
+        return NextResponse.json(product, { status: 200 });
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Lỗi khi lấy sản phẩm' }, { status: 500 });
+        console.error('Lỗi khi lấy sản phẩm:', error);
+        return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
     }
 }
 
-// ✅ API CẬP NHẬT SẢN PHẨM
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Cập nhật sản phẩm
+export async function PUT(req: NextRequest) {
     try {
+        const url = new URL(req.url);
+        const id = url.pathname.split('/').pop();
+
+        if (!id) {
+            return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
+        }
+
         const formData = await req.formData();
 
         const name = formData.get('name') as string | null;
@@ -52,7 +66,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
         // ✅ Cập nhật dữ liệu sản phẩm
         const updatedProduct = await prisma.product.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 name,
                 description,
@@ -63,39 +77,36 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
         return NextResponse.json({ success: true, product: updatedProduct }, { status: 200 });
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Lỗi khi cập nhật sản phẩm' }, { status: 500 });
+        console.error('Lỗi khi cập nhật sản phẩm:', error);
+        return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Xóa sản phẩm
+export async function DELETE(req: NextRequest) {
     try {
-        const productId = params.id;
-        console.log("Xóa sản phẩm với ID:", productId); // ✅ Debug ID
+        const url = new URL(req.url);
+        const id = url.pathname.split('/').pop();
 
-        if (!productId) {
-            console.error("Lỗi: Thiếu ID sản phẩm");
+        if (!id) {
             return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
         }
 
-        const product = await prisma.product.findUnique({ where: { id: productId } });
+        const product = await prisma.product.findUnique({ where: { id } });
 
         if (!product) {
-            console.error("Lỗi: Sản phẩm không tồn tại");
             return NextResponse.json({ error: 'Sản phẩm không tồn tại' }, { status: 404 });
         }
 
         // ✅ Xóa tất cả ảnh của sản phẩm trong ProductImage trước
-        await prisma.productImage.deleteMany({
-            where: { productId: productId },
-        });
+        await prisma.productImage.deleteMany({ where: { productId: id } });
 
         // ✅ Sau đó xóa sản phẩm
-        await prisma.product.delete({ where: { id: productId } });
+        await prisma.product.delete({ where: { id } });
 
         return NextResponse.json({ success: true, message: 'Xóa sản phẩm thành công' }, { status: 200 });
     } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm:", error);
-        return NextResponse.json({ error: 'Lỗi khi xóa sản phẩm' }, { status: 500 });
+        console.error('Lỗi khi xóa sản phẩm:', error);
+        return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
     }
 }
