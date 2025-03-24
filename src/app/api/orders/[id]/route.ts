@@ -1,17 +1,17 @@
-// app/api/orders/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+// ✅ Lấy đơn hàng theo ID
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const { id } = context.params;
+        const orderId = params.id;
 
-        if (!id) {
+        if (!orderId) {
             return NextResponse.json({ error: 'Thiếu ID đơn hàng' }, { status: 400 });
         }
 
         const order = await prisma.order.findUnique({
-            where: { id },
+            where: { id: orderId },
             include: {
                 designRequest: true,
             },
@@ -28,18 +28,19 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     }
 }
 
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+// ✅ Cập nhật đơn hàng
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const { id } = context.params;
+        const orderId = params.id;
 
-        if (!id) {
+        if (!orderId) {
             return NextResponse.json({ error: 'Thiếu ID đơn hàng' }, { status: 400 });
         }
 
         const data = await req.json();
 
         const updatedOrder = await prisma.order.update({
-            where: { id },
+            where: { id: orderId },
             data,
         });
 
@@ -51,16 +52,16 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
 }
 
 // ✅ Xóa đơn hàng
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const { id } = context.params;
+        const orderId = params.id;
 
-        if (!id) {
+        if (!orderId) {
             return NextResponse.json({ error: 'Thiếu ID đơn hàng' }, { status: 400 });
         }
 
         await prisma.order.delete({
-            where: { id },
+            where: { id: orderId },
         });
 
         return NextResponse.json({ message: 'Đã xóa đơn hàng thành công' }, { status: 200 });
