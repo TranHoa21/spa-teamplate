@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "@/style/home/BannerSection.css"
 export default function BannerSection() {
-    const [bgImage, setBgImage] = useState("/images/desktop.WebP");
+    const [bgImage, setBgImage] = useState("/images/Desktop.webp");
     const router = useRouter();
     const [isClicked, setIsClicked] = useState(false);
 
@@ -21,7 +21,7 @@ export default function BannerSection() {
             } else if (window.innerWidth < 1024) {
                 setBgImage("/images/Tablet.webp");
             } else {
-                setBgImage("/images/desktop.webp");
+                setBgImage("/images/Desktop.webp");
             }
         };
 
