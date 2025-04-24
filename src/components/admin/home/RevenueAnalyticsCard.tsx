@@ -5,6 +5,7 @@ import axios from 'axios';
 import { icons } from "@/lib/data/icon";
 import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
 import Image from 'next/image';
+import { motion } from "framer-motion";
 
 const RevenueAnalyticsCard = () => {
     const [totalRevenue, setTotalRevenue] = useState(0);
@@ -17,24 +18,36 @@ const RevenueAnalyticsCard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('/api/orders'); // API Next.js
+                const response = await axios.get('/api/orders');
                 const data = response.data.orders;
 
-                const currentMonth = new Date().getMonth();
-                const previousMonth = currentMonth - 1;
+                console.log("API Response:", data); // Debug
+                if (!Array.isArray(data)) {
+                    console.error("API response is not an array", data);
+                    return;
+                }
 
-                const revenueInCurrentMonth = data.filter((order: { created_at: string }) => {
-                    const startDay = new Date(order.created_at);
-                    return startDay.getMonth() === currentMonth;
+                const now = new Date();
+                const currentMonth = now.getUTCMonth();
+                const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+
+                const revenueInCurrentMonth = data.filter((order) => {
+                    if (!order || !order.createdAt) return false;
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate.getUTCMonth() === currentMonth;
                 });
 
-                const revenueInPreviousMonth = data.filter((order: { created_at: string }) => {
-                    const startDay = new Date(order.created_at);
-                    return startDay.getMonth() === previousMonth;
+                const revenueInPreviousMonth = data.filter((order) => {
+                    if (!order || !order.createdAt) return false;
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate.getUTCMonth() === previousMonth;
                 });
 
-                const totalRevenueInCurrentMonth = revenueInCurrentMonth.reduce((total: number, order: { total_amount: string }) => total + parseFloat(order.total_amount), 0);
-                const totalRevenueInPreviousMonth = revenueInPreviousMonth.reduce((total: number, order: { total_amount: string }) => total + parseFloat(order.total_amount), 0);
+                const totalRevenueInCurrentMonth = revenueInCurrentMonth.reduce((total, order) => total + (order.totalPrice || 0), 0);
+                const totalRevenueInPreviousMonth = revenueInPreviousMonth.reduce((total, order) => total + (order.totalPrice || 0), 0);
+
+                console.log("Revenue This Month:", totalRevenueInCurrentMonth);
+                console.log("Revenue Last Month:", totalRevenueInPreviousMonth);
 
                 let percentIncrease = 0;
                 if (totalRevenueInPreviousMonth !== 0) {
@@ -55,7 +68,11 @@ const RevenueAnalyticsCard = () => {
     }, []);
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="p-6 bg-white shadow-lg rounded-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                     <span className="text-3xl text-green-500">{icons.revenue}</span>
@@ -83,7 +100,7 @@ const RevenueAnalyticsCard = () => {
                     }}
                 />
             </div>
-        </div>
+        </motion.div>
     );
 };
 

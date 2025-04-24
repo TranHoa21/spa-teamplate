@@ -35,3 +35,13 @@
     font-family: var(--font-handwriting);
   }
 }
+.prose h1 {
+  @apply text-4xl text-[#FF6B6B] font-bold mt-[20px] mb-[5px];
+}
+
+.prose h2 {
+  @apply text-3xl text-[#FF6B6B] font-semibold mt-10 mb-4;
+}
+.prose img {
+  @apply rounded-md shadow my-[10px]
+}

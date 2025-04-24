@@ -1,20 +1,21 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const testimonials = [
     {
         name: "Ngọc Trâm",
         message:
             "Sản phẩm quá đẹp, mình rất hài lòng và sẽ đặt lại cho bạn bè.",
-        image: "/images/testimonials/1.webp",
+        image: "/images/review-tui.jpg",
         video: null,
     },
     {
         name: "Minh Anh",
         message:
             "Mình nhận được cốc vẽ siêu xinh, đóng gói cức ấm áp, siêu hài lòng!",
-        image: "/images/testimonials/2.webp",
+        image: "/images/review-coc.jpg",
         video: null,
     },
     {
@@ -27,8 +28,14 @@ const testimonials = [
 
 export default function TestimonialsSection() {
     return (
-        <section id="testimonials" className="bg-white py-16 px-4">
-            <div className="max-w-6xl mx-auto">
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            id="testimonials" className="bg-white py-16 px-4">
+            <div
+
+                className="max-w-6xl mx-auto">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold text-[#333] mb-2">
                         Cảm nhận khách hàng
@@ -66,6 +73,6 @@ export default function TestimonialsSection() {
                     ))}
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 }

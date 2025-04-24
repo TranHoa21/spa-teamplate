@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -26,6 +27,8 @@ export default function LoginPage() {
             }
 
             localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('isLoggedIn', "true");
             router.push('/admin'); // điều hướng về admin
         } catch (err) {
             console.log("check lỗi ", err)
@@ -34,7 +37,11 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-[#FFF1E6] px-4">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex items-center justify-center h-screen bg-[#FFF1E6] px-4">
             <form onSubmit={handleLogin} className="bg-white shadow-md rounded-lg p-8 max-w-sm w-full">
                 <h2 className="text-2xl font-bold text-center text-[#FF6B6B] mb-6">Đăng nhập Admin</h2>
 
@@ -63,6 +70,6 @@ export default function LoginPage() {
                     Đăng nhập
                 </button>
             </form>
-        </div>
+        </motion.div>
     );
 }

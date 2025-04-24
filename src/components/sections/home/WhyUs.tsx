@@ -1,4 +1,5 @@
 import { Heart, Brush, Smile, ShieldCheck } from 'lucide-react';
+import { motion } from "framer-motion";
 
 const reasons = [
     {
@@ -25,8 +26,14 @@ const reasons = [
 
 export default function WhyUs() {
     return (
-        <section id="why" className="bg-white py-16 px-4">
-            <div className="max-w-5xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            id="why" className="bg-white py-16 px-4">
+            <div
+
+                className="max-w-5xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 {/* Left - Text */}
                 <div>
                     <h2 className="text-3xl font-bold text-[#333333] mb-4">Hành trình từ những nét vẽ đầu tiên</h2>
@@ -74,6 +81,6 @@ export default function WhyUs() {
                     ))}
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 }

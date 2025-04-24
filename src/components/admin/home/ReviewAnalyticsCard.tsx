@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { icons } from "@/lib/data/icon";
 import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
+import { motion } from "framer-motion";
 
 const ReviewAnalyticsCard = () => {
     const [totalReviews, setTotalReviews] = useState(0);
@@ -50,7 +51,11 @@ const ReviewAnalyticsCard = () => {
     }, []);
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="p-6 bg-white shadow-lg rounded-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                     <span className="text-3xl text-yellow-500">{icons.star}</span>
@@ -78,7 +83,7 @@ const ReviewAnalyticsCard = () => {
                     }}
                 />
             </div>
-        </div>
+        </motion.div>
     );
 };
 

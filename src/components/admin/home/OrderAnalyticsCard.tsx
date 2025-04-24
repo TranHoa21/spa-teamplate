@@ -5,6 +5,7 @@ import axios from 'axios';
 import { icons } from "@/lib/data/icon";
 import AnalyticsWidgetSummary from "./AnalyticsWidgetSummary";
 import Image from 'next/image';
+import { motion } from "framer-motion";
 
 const OrderAnalyticsCard = () => {
     const [totalOrders, setTotalOrders] = useState(0);
@@ -13,21 +14,27 @@ const OrderAnalyticsCard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('/api/orders'); // API Next.js
+                const response = await axios.get('/api/orders');
                 const data = response.data.orders;
 
-                const currentMonth = new Date().getMonth();
-                const previousMonth = currentMonth - 1;
+                console.log("API Response:", data);
 
-                const ordersInCurrentMonth = data.filter((order: { updated_at: string }) => {
-                    const startDay = new Date(order.updated_at);
-                    return startDay.getMonth() === currentMonth;
+                const now = new Date();
+                const currentMonth = now.getUTCMonth(); // Lấy tháng hiện tại theo UTC
+                const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1; // Nếu là tháng 1, lùi về tháng 12
+
+                const ordersInCurrentMonth = data.filter((order: { createdAt: string }) => {
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate.getUTCMonth() === currentMonth;
                 });
 
-                const ordersInPreviousMonth = data.filter((order: { updated_at: string }) => {
-                    const startDay = new Date(order.updated_at);
-                    return startDay.getMonth() === previousMonth;
+                const ordersInPreviousMonth = data.filter((order: { createdAt: string }) => {
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate.getUTCMonth() === previousMonth;
                 });
+
+                console.log("Orders This Month:", ordersInCurrentMonth);
+                console.log("Orders Last Month:", ordersInPreviousMonth);
 
                 const totalOrdersInCurrentMonth = ordersInCurrentMonth.length;
                 const totalOrdersInPreviousMonth = ordersInPreviousMonth.length;
@@ -51,7 +58,11 @@ const OrderAnalyticsCard = () => {
     }, []);
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="p-6 bg-white shadow-lg rounded-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                     <span className="text-3xl text-blue-500">{icons.shoppingCart}</span>
@@ -80,7 +91,7 @@ const OrderAnalyticsCard = () => {
                     }}
                 />
             </div>
-        </div>
+        </motion.div>
     );
 };
 

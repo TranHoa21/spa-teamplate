@@ -1,10 +1,8 @@
 // app/api/posts/route.ts
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-import cloudinary from '@/lib/cloudinary';
-import { parseForm } from '@/lib/parseForm';
-import { IncomingMessage } from 'http';
 import slugify from 'slugify';
+import cloudinary from "@/lib/cloudinary";
 // GET tất cả bài viết
 export async function GET() {
     try {
@@ -18,64 +16,78 @@ export async function GET() {
     }
 }
 
-// POST bài viết mới
+
 export async function POST(req: NextRequest) {
     try {
-        const nodeReq: IncomingMessage | undefined = (req as unknown as { node?: { req?: IncomingMessage } }).node?.req;
-        if (!nodeReq) {
-            throw new Error('Không thể lấy request gốc từ node');
-        }
+        const formData = await req.formData();
 
-        const { fields, files } = await parseForm(nodeReq);
-
-        if (!fields.title || !fields.content) {
-            return NextResponse.json({ error: 'Tiêu đề và nội dung không được để trống' }, { status: 400 });
-        }
-
-        const title = Array.isArray(fields.title) ? fields.title[0] : fields.title ?? '';
+        const title = formData.get("title") as string;
+        const content = formData.get("content") as string;
+        const published = formData.get("published") === "true";
+        const readingTime = parseInt(formData.get("readingTime") as string, 10);
         const slug = slugify(title, { lower: true, strict: true });
-        const uploadedUrls: string[] = [];
 
-        if (files.image) {
-            const fileArray = Array.isArray(files.image) ? files.image : [files.image];
-            for (const file of fileArray) {
-                if (!file?.filepath) continue;
-                const upload = await cloudinary.uploader.upload(file.filepath, { folder: 'posts' });
-                uploadedUrls.push(upload.secure_url);
-            }
+        if (!title || !content) {
+            console.log("check lỗi >>", "thiếu title hoặc content")
+            return NextResponse.json({ error: "Tiêu đề và nội dung không được để trống" }, { status: 400 });
         }
 
+        const uploadedImages: { imageUrl: string; altText?: string }[] = [];
+
+        // Upload ảnh nếu có (giống PUT)
+        const imageFile = formData.get("image") as File | null;
+        if (imageFile && typeof imageFile === "object") {
+            const arrayBuffer = await imageFile.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            const upload = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    { folder: "posts" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+                uploadStream.end(buffer);
+            });
+
+            uploadedImages.push({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                imageUrl: (upload as any).secure_url,
+                altText: "",
+            });
+        }
+
+        // Tạo bài viết mới
         const newPost = await prisma.post.create({
             data: {
-                title: Array.isArray(fields.title) ? fields.title[0] : fields.title ?? "",
-                slug: slug,
-                content: Array.isArray(fields.content) ? fields.content[0] : fields.content ?? "",
-                imageUrl: uploadedUrls[0] || null,
-                contentImages: uploadedUrls,
-                metaTitle: String(Array.isArray(fields.metaTitle) ? fields.metaTitle[0] : fields.metaTitle || fields.title || ''),
-                metaDescription: Array.isArray(fields.metaDescription)
-                    ? fields.metaDescription[0] || ''
-                    : fields.metaDescription ?? '',
-
-                keywords: Array.isArray(fields.keywords)
-                    ? fields.keywords[0] || ''
-                    : fields.keywords ?? '',
-                published: Array.isArray(fields.published)
-                    ? fields.published[0] === 'true'
-                    : fields.published === 'true',
-
-                publishedAt: Array.isArray(fields.published)
-                    ? (fields.published[0] === 'true' ? new Date() : null)
-                    : (fields.published === 'true' ? new Date() : null),
-
+                title,
+                slug,
+                content,
+                imageUrl: uploadedImages.length > 0 ? uploadedImages[0].imageUrl : null,
+                metaTitle: formData.get("metaTitle")?.toString() ?? title,
+                metaDescription: formData.get("metaDescription")?.toString() ?? "",
+                keywords: formData.get("keywords")?.toString() ?? "",
+                canonicalUrl: formData.get("canonicalUrl")?.toString() ?? "",
+                published,
                 views: 0,
+                readingTime: isNaN(readingTime) ? null : readingTime,
+                categoryId: formData.get("categoryId")?.toString(),
+                authorId: formData.get("authorId")?.toString(),
+                images: {
+                    create: uploadedImages.map((img) => ({
+                        imageUrl: img.imageUrl,
+                        altText: img.altText,
+                    })),
+                },
             },
         });
 
         return NextResponse.json({ success: true, post: newPost }, { status: 201 });
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: 'Lỗi khi tạo bài viết' }, { status: 500 });
+        console.error("Lỗi khi tạo bài viết:", error);
+        return NextResponse.json({ error: "Lỗi khi tạo bài viết" }, { status: 500 });
     }
 }
+
 

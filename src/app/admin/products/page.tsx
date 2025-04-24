@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { motion } from "framer-motion";
+
 export const dynamic = 'force-dynamic';
 
 interface Product {
@@ -57,7 +59,11 @@ export default function AdminProductsPage() {
     };
 
     return (
-        <section className="space-y-8">
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="space-y-8">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-[#333]">Quản lý sản phẩm</h1>
                 <Button variant="primary" size="sm" onClick={() => router.push('/admin/products/tao-san-pham-moi')}>
@@ -104,6 +110,6 @@ export default function AdminProductsPage() {
                     </tbody>
                 </table>
             </div>
-        </section>
+        </motion.section>
     );
 }

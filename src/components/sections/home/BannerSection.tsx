@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import "@/style/home/BannerSection.css"
+import "@/style/home/BannerSection.css";
+import { motion } from "framer-motion";
+
 export default function BannerSection() {
     const [bgImage, setBgImage] = useState("/images/Desktop.webp");
     const router = useRouter();
@@ -32,13 +34,17 @@ export default function BannerSection() {
     }, []);
 
     return (
-        <section
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             id="hero"
-            className="text-[#333333] py-8 sm:py-12 md:py-24 mt-[70px]"
+            className="text-[#333333] py-8 sm:py-12 md:py-24 "
             style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
         >
-            <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-start gap-6 md:gap-10 ">
-                {/* Nội dung bên trái */}
+            <div
+                className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-start gap-6 md:gap-10 ">
+
                 <div className="flex-1 text-left max-w-[90%] sm:max-w-md pl-2 sm:pl-0 sm:mt-[7%]">
                     <h1 className="text-sm sm:text-2xl md:text-4xl font-bold leading-tight mb-2 sm:mb-4">
                         Biến Ảnh Của Bạn <br /> Thành Tác Phẩm Nghệ Thuật
@@ -56,7 +62,7 @@ export default function BannerSection() {
                     </button>
                 </div>
             </div>
-        </section>
+        </motion.section>
 
 
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { motion } from "framer-motion";
 
 interface ExtraItem {
     image: string;
@@ -27,7 +28,11 @@ export default function ProductExtras({ title, items, type }: ProductExtrasProps
     };
 
     return (
-        <section className="max-w-6xl mx-auto px-4 py-16">
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-6xl mx-auto px-4 py-16">
             <h3 className="text-2xl font-bold text-center mb-8">{title}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {items.map((item, index) => (
@@ -52,6 +57,6 @@ export default function ProductExtras({ title, items, type }: ProductExtrasProps
                     </div>
                 ))}
             </div>
-        </section>
+        </motion.section>
     );
 }

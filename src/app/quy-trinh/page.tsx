@@ -5,7 +5,7 @@ export default function OderPage() {
 
 
     return (
-        <div className="mt-[5%]">
+        <div className="">
             <HowToOrder />
         </div>
     );

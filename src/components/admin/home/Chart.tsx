@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { motion } from "framer-motion";
 
 export default function Chart() {
     const [filteredData, setFilteredData] = useState<{ date: string; revenue: number; order: number }[]>([]);
@@ -12,8 +13,19 @@ export default function Chart() {
         async function fetchData() {
             try {
                 const response = await axios.get('/api/orders');
-                const groupedData = groupDataByDate(response.data.orders);
+
+                // Kiểm tra nếu API trả về `response.data.orders`, nếu không thì dùng `response.data`
+                const orders = response.data.orders || response.data;
+
+                // Kiểm tra dữ liệu có hợp lệ không
+                if (!Array.isArray(orders)) {
+                    console.error("Invalid API response: expected an array but got", orders);
+                    return;
+                }
+
+                const groupedData = groupDataByDate(orders);
                 setFilteredData(getFilteredData(groupedData, filterDuration));
+
             } catch (error) {
                 console.error('Error fetching chart data:', error);
             }
@@ -26,24 +38,33 @@ export default function Chart() {
         return `${amount.toLocaleString('vi-VN')} VND`;
     };
 
-    function groupDataByDate(data: { created_at: string; total_amount: string }[]) {
+    function groupDataByDate(data: { createdAt: string; totalPrice: number }[]) {
+        if (!Array.isArray(data)) {
+            console.error("groupDataByDate received invalid data:", data);
+            return [];
+        }
+
         const groupedData: Record<string, { date: string; revenue: number; order: number }> = {};
 
         data.forEach((item) => {
-            const createDate = new Date(item.created_at);
+            if (!item.createdAt || !item.totalPrice) {
+                console.warn("Skipping invalid order:", item);
+                return;
+            }
+
+            const createDate = new Date(item.createdAt);
             const dateStr = createDate.toISOString().split('T')[0];
 
             if (!groupedData[dateStr]) {
                 groupedData[dateStr] = { date: dateStr, revenue: 0, order: 0 };
             }
 
-            groupedData[dateStr].revenue += parseFloat(item.total_amount);
+            groupedData[dateStr].revenue += item.totalPrice;
             groupedData[dateStr].order += 1;
         });
 
-        return Object.values(groupedData); // ✅ Đảm bảo trả về đúng kiểu { date, revenue, order }[]
+        return Object.values(groupedData);
     }
-
 
     function getFilteredData(
         data: { date: string; revenue: number; order: number }[],
@@ -58,16 +79,19 @@ export default function Chart() {
         return data.filter((item) => new Date(item.date) >= startDate);
     }
 
-
     return (
-        <div className="p-4 bg-white shadow-lg rounded-lg">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="p-4 bg-white shadow-lg rounded-lg">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Daily Recap</h2>
             <div className="flex gap-4 mb-4">
                 {(['3m', '6m', '1y'] as const).map((duration) => (
                     <button
                         key={duration}
                         className={`px-4 py-2 rounded-lg transition-all ${filterDuration === duration ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                        onClick={() => setFilterDuration(duration as '3m' | '6m' | '1y')} // ✅ Fix lỗi
+                        onClick={() => setFilterDuration(duration as '3m' | '6m' | '1y')}
                     >
                         {duration.toUpperCase()}
                     </button>
@@ -79,14 +103,17 @@ export default function Chart() {
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip
-                        formatter={(value: number | string) => typeof value === 'number' ? formatPrice(value) : value} // ✅ Fix lỗi
-                    />
-                    <Legend />
+                        formatter={(value: number | string, name: string) => {
+                            if (name === "order") {
+                                return `${value} Đơn`; // Hiển thị số đơn hàng
+                            }
+                            return formatPrice(value); // Hiển thị giá tiền có đơn vị VND
+                        }}
+                    />                    <Legend />
                     <Line type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} />
                     <Line type="monotone" dataKey="order" stroke="#82ca9d" />
                 </LineChart>
             </ResponsiveContainer>
-        </div>
-
+        </motion.div>
     );
 }

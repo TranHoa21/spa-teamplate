@@ -2,14 +2,14 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import moment from "moment";
+import { motion } from "framer-motion";
 
 interface Order {
     id: number;
-    user: { name: string };
+    name: string;
     status: string;
-    start_day: string;
-    total_amount: string;
+    paymentMethod: string;
+    totalPrice: string;
 }
 
 const Transactions = () => {
@@ -35,7 +35,11 @@ const Transactions = () => {
     }, []);
 
     return (
-        <div className="bg-white shadow-lg rounded-lg p-6">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Latest Transactions</h2>
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200">
@@ -43,7 +47,7 @@ const Transactions = () => {
                         <tr>
                             <th className="p-3 border border-gray-200 text-left">Name</th>
                             <th className="p-3 border border-gray-200 text-left">Status</th>
-                            <th className="p-3 border border-gray-200 text-left">Date</th>
+                            <th className="p-3 border border-gray-200 text-left">Method</th>
                             <th className="p-3 border border-gray-200 text-left">Amount</th>
                         </tr>
                     </thead>
@@ -56,7 +60,7 @@ const Transactions = () => {
                                         src="https://res.cloudinary.com/dhjrrk4pg/image/upload/v1715060332/user_1177568_mxilzq.png"
                                         alt="User"
                                     />
-                                    {booking.user.name}
+                                    {booking.name}
                                 </td>
                                 <td className="p-3">
                                     <span className={`px-3 py-1 text-sm font-medium rounded-full 
@@ -65,14 +69,14 @@ const Transactions = () => {
                                         {booking.status}
                                     </span>
                                 </td>
-                                <td className="p-3">{moment(booking.start_day).format("YYYY-MM-DD")}</td>
-                                <td className="p-3 font-semibold text-right">{formatPrice(booking.total_amount)}</td>
+                                <td className="p-3">{booking.paymentMethod}</td>
+                                <td className="p-3 font-semibold text-right">{formatPrice(booking.totalPrice)}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

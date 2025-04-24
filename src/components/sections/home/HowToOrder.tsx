@@ -6,6 +6,7 @@ import {
     CreditCard,
     CheckCircle,
 } from 'lucide-react';
+import { motion } from "framer-motion";
 
 const steps = [
     {
@@ -42,8 +43,14 @@ const steps = [
 
 export default function HowToOrder() {
     return (
-        <section id="order-guide" className="bg-[#FFF1E6] py-16 px-4">
-            <div className="max-w-6xl mx-auto text-center">
+        <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            id="order-guide" className="bg-[#FFF1E6] py-16 px-4">
+            <div
+
+                className="max-w-6xl mx-auto text-center">
                 <h2 className="text-3xl font-bold text-[#333333] mb-4">Hướng dẫn đặt hàng</h2>
                 <p className="text-[#7D7D7D] mb-10">Chỉ vài bước đơn giản là bạn đã có món quà xinh xắn, độc quyền!</p>
 
@@ -69,6 +76,6 @@ export default function HowToOrder() {
                     ))}
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 }

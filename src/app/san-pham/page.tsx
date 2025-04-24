@@ -5,7 +5,7 @@ export default function ProductDetailPage() {
 
 
     return (
-        <div className="mt-[5%]">
+        <div className="">
             <FeaturedProducts />
         </div>
     );

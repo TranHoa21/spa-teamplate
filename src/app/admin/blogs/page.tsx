@@ -29,14 +29,14 @@ export default function AdminBlogPage() {
         fetchPosts();
     }, []);
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (slug: string) => {
         const confirm = window.confirm('Bạn có chắc muốn xoá bài viết này?');
         if (!confirm) return;
         try {
-            await fetch(`/api/posts/${id}`, {
+            await fetch(`/api/posts/${slug}`, {
                 method: 'DELETE',
             });
-            setPosts((prev) => prev.filter((post) => post.id !== id));
+            setPosts((prev) => prev.filter((post) => post.slug !== slug));
         } catch (error) {
             console.error('Lỗi khi xoá bài viết:', error);
         }
@@ -46,7 +46,7 @@ export default function AdminBlogPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-[#333]">Quản lý bài viết</h1>
-                <Link href="/admin/posts/new">
+                <Link href="/admin/blogs/tao-bai-viet-moi">
                     <Button className="flex items-center gap-2">
                         <Plus size={18} /> Thêm bài viết
                     </Button>
@@ -72,7 +72,7 @@ export default function AdminBlogPage() {
                                     {new Date(post.createdAt).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 text-right space-x-2">
-                                    <Link href={`/admin/posts/edit/${post.id}`}>
+                                    <Link href={`/admin/blogs/${post.slug}`}>
                                         <Button variant="secondary" size="sm">
                                             <Pencil size={16} />
                                         </Button>
@@ -80,7 +80,7 @@ export default function AdminBlogPage() {
                                     <Button
                                         variant="destructive"
                                         size="sm"
-                                        onClick={() => handleDelete(post.id)}
+                                        onClick={() => handleDelete(post.slug)}
                                     >
                                         <Trash2 size={16} />
                                     </Button>

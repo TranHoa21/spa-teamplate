@@ -8,13 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      Role     @default(CUSTOMER)
-  createdAt DateTime @default(now())
-
+  id           String         @id @default(uuid())
+  email        String         @unique
+  password     String
+  name         String?
+  role         Role           @default(CUSTOMER)
+  createdAt    DateTime       @default(now())
+  posts        Post[]
+  comments     Comment[]
+  notification Notification[]
+  orders Order[] 
 }
 
 enum Role {
@@ -23,98 +26,199 @@ enum Role {
 }
 
 model Product {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  imageUrl    String?        // Ảnh chính
-  images      ProductImage[] // Liên kết đến nhiều ảnh
-  orders      Order[]
+  id            String         @id @default(uuid())
+  name          String
+  description   String?
+  price         Float
+  originalPrice Float? // Giá gốc
+  sale          Boolean // Đang giảm giá hay không
+  rating        Float? // Điểm đánh giá trung bình
+  slug          String         @unique // Đường dẫn thân thiện
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  imageUrl      String? // Ảnh chính
+  images        ProductImage[] // Liên kết đến nhiều ảnh
+  orderItems    OrderItem[]    @relation("ProductOrderItems")
+  reviews       Review[] // Liên kết đến bảng Review
+  cartItems   CartItem[]
 }
 
 model ProductImage {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   url       String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
   productId String
 }
 
+model Review {
+  id         String   @id @default(uuid())
+  content    String // Nội dung đánh giá
+  rating     Int // Điểm đánh giá (1-5)
+  authorName String // Tên người đánh giá
+  createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+}
+
 model Order {
-  id            String        @id @default(uuid())
-  product       Product?      @relation(fields: [productId], references: [id])
-  productId     String?
-  quantity      Int           @default(1)
-  totalPrice    Float
-  status        OrderStatus   @default(PENDING)
-  createdAt     DateTime      @default(now())
+  id             Int            @id @default(autoincrement())
+  totalPrice     Float
+  status         OrderStatus    @default(PENDING)
+  createdAt      DateTime       @default(now())
+  name           String
+  phone          String
+  email          String
+  address        String
+  paymentMethod  String
+  transactionNo  String?
+  paymentTime    DateTime?
+  notifications  Notification[]
+  orderItems     OrderItem[]  // Mối quan hệ 1-n với OrderItem
 
-  // Thông tin khách hàng
-  name          String
-  phone         String
-  email         String
-  address       String
-  paymentMethod String
+  // 👇 Thêm mối quan hệ với User
+  userId         String?       // nếu không bắt buộc user phải đăng nhập
+  user           User?         @relation(fields: [userId], references: [id])
+}
 
-  // Dành cho trường hợp khách chọn nhờ thiết kế
-  designType    String
-  drawStyle     String?     // Kiểu vẽ: Màu, trắng đen...
-  font          String?     // Font chữ
-  customText    String?     // Tên in, lời nhắn
-  imageUrl      String      // Link ảnh khách gửi
-
-  designRequest DesignRequest?
-  notifications Notification[]
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  order          Order   @relation(fields: [orderId], references: [id])
+  orderId        Int
+  product        Product @relation("ProductOrderItems", fields: [productId], references: [id])
+  productId      String
+  quantity       Int     @default(1)
+  productName    String?
+  designType     String
+  drawStyle      String?
+  font           String?
+  customText     String?
+  imageUrl       String
+  selectedOption String?
 }
 
 enum OrderStatus {
   PENDING
+  PAID
   CONFIRMED
   SHIPPED
   COMPLETED
   CANCELLED
 }
 
+model Cart {
+  id        String      @id @default(uuid())
+  userId    String?     // Cho phép guest (không cần login)
+  items     CartItem[]
+  createdAt DateTime    @default(now())
+}
 
-model DesignRequest {
+model CartItem {
+  id             String   @id @default(uuid())
+  cart           Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId         String
+
+  product        Product  @relation(fields: [productId], references: [id])
+  productId      String
+
+  quantity       Int
+  drawStyle      String?   // optional fields cho custom sản phẩm
+  font           String?
+  customText     String?
+  selectedOption String?
+
+  createdAt      DateTime  @default(now())
+}
+
+
+model Post {
+  id              String  @id @default(uuid())
+  title           String
+  slug            String  @unique
+  excerpt         String? // Tóm tắt bài viết
+  content         String
+  imageUrl        String?
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  canonicalUrl    String?
+  published       Boolean @default(false)
+  status          String  @default("draft") // draft, published, archived
+  featured        Boolean @default(false) // Bài viết nổi bật
+  likes           Int     @default(0) // Lượt thích
+  views           Int     @default(0)
+  readingTime     Int?
+  postType        String  @default("article") // article, tutorial, news
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  tags       Tag[]
+  authorId   String?
+  author     User?     @relation(fields: [authorId], references: [id])
+
+  images   PostImage[] // Quan hệ với bảng PostImage
+  comments Comment[] // Quan hệ với bảng Comment
+  viewsLog PostView[] // Quan hệ với bảng PostView
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostImage {
+  id        Int      @id @default(autoincrement()) // ID duy nhất, tự động tăng
+  imageUrl  String // URL của hình ảnh
+  altText   String? // Mô tả cho hình ảnh (alt text), có thể NULL
+  createdAt DateTime @default(now()) // Thời gian tạo
+  updatedAt DateTime @updatedAt // Thời gian cập nhật
+
+  // Nếu bạn muốn liên kết với bảng `Post` (ví dụ bài viết)
+  postId String? // ID bài viết liên kết (có thể NULL nếu không có)
+  post   Post?   @relation(fields: [postId], references: [id]) // Quan hệ với bảng Post
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+}
+
+model Comment {
   id        String   @id @default(uuid())
-  order     Order    @relation(fields: [orderId], references: [id])
-  orderId   String   @unique
-  notes     String?  // mô tả yêu cầu
-  imageUrl  String?  // ảnh khách tải lên
-  status    DesignStatus @default(RECEIVED)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  content   String
+  status    String   @default("pending") // pending, approved, spam
   createdAt DateTime @default(now())
 }
 
-enum DesignStatus {
-  RECEIVED
-  IN_PROGRESS
-  DONE
-}
-
-model Post {
-  id              String   @id @default(uuid())
-  title           String   // Tiêu đề bài viết
-  slug            String   @unique  // URL thân thiện SEO
-  content         String   // Nội dung bài viết (HTML hoặc Markdown)
-  imageUrl        String?  // Ảnh đại diện bài viết (Thumbnail)
-  contentImages   String[] // Danh sách ảnh trong bài viết
-  metaTitle       String?  // Tiêu đề SEO
-  metaDescription String?  // Mô tả SEO
-  keywords        String?  // Từ khóa SEO
-  published       Boolean  @default(false) // Đã đăng hay chưa
-  publishedAt     DateTime?  // Ngày đăng bài viết
-  views           Int      @default(0) // Số lượt xem bài viết
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model PostView {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  ip        String
+  userAgent String
+  createdAt DateTime @default(now())
 }
 
 model Notification {
   id        String   @id @default(uuid())
-  message   String
-  isRead    Boolean  @default(false)
+  title     String
+  content   String
+  seen      Boolean  @default(false)
   createdAt DateTime @default(now())
-  order     Order?   @relation(fields: [orderId], references: [id])
-  orderId   String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
 }

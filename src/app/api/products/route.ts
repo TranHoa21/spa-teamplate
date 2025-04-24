@@ -22,21 +22,37 @@ export async function POST(req: NextRequest) {
         const name = formData.get('name') as string | null;
         const description = formData.get('description') as string | null;
         const price = formData.get('price') as string | null;
+        const originalPrice = formData.get('originalPrice') as string | null;
+        const sale = formData.get('sale') === 'true';
+        const rating = formData.get('rating') as string | null;
+        const slug = formData.get('slug') as string | null;
 
-        if (!name || !price || !description) {
+        if (!name || !price || !description || !originalPrice || !slug) {
             return NextResponse.json({ error: 'Thiếu thông tin sản phẩm' }, { status: 400 });
         }
 
+        let imageUrl = null;
         const uploadedUrls: string[] = [];
 
-        // ✅ Xử lý upload ảnh lên Cloudinary
-        const imageFiles = formData.getAll('image') as File[];
+        // ✅ Xử lý upload ảnh đại diện lên Cloudinary
+        const mainImage = formData.get('imageUrl') as File | null;
+        if (mainImage) {
+            const arrayBuffer = await mainImage.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            const upload = await cloudinary.uploader.upload(`data:${mainImage.type};base64,${buffer.toString('base64')}`, {
+                folder: 'products',
+            });
+            imageUrl = upload.secure_url; // ✅ Lưu ảnh đại diện
+        }
+
+        // ✅ Xử lý upload ảnh phụ lên Cloudinary
+        const imageFiles = formData.getAll('images') as File[];
         for (const file of imageFiles) {
             if (file) {
                 const arrayBuffer = await file.arrayBuffer();
                 const buffer = Buffer.from(arrayBuffer);
 
-                // Upload ảnh lên Cloudinary
                 const upload = await cloudinary.uploader.upload(`data:${file.type};base64,${buffer.toString('base64')}`, {
                     folder: 'products',
                 });
@@ -50,7 +66,11 @@ export async function POST(req: NextRequest) {
                 name,
                 description,
                 price: parseFloat(price),
-                imageUrl: uploadedUrls[0] || null, // Ảnh đại diện chính
+                originalPrice: parseFloat(originalPrice),
+                sale,
+                rating: rating ? parseFloat(rating) : null,
+                slug,
+                imageUrl, // ✅ Lưu ảnh đại diện chính
             },
         });
 

@@ -5,7 +5,7 @@ export default function WhyPage() {
 
 
     return (
-        <div className="mt-[5%]">
+        <div className="">
             <WhyUs />
         </div>
     );
