@@ -1,6 +1,6 @@
 // app/api/email/shop-confirm/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { transporter } from '@/lib/mail';
+import { transporter } from '@/app/api/email/mail';
 
 export async function POST(req: NextRequest) {
     try {
