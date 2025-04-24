@@ -155,13 +155,15 @@ const Header = () => {
 
 
       {/* Navbar chính */}
-      <nav className="flex items-center justify-between w-[90%] mx-auto px-6 py-4 relative">
+      <nav className="flex items-center justify-between w-full px-2 sm:px-6 py-4 relative">
         {/* Logo & nút menu */}
         <div className="flex items-center gap-4">
           <button onClick={handleMenuToggle} className="md:hidden text-gray-700">
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <Link href="/" className="text-2xl font-bold tracking-wide text-[#FF6B6B]">
+
+          {/* Logo desktop */}
+          <Link href="/" className="text-2xl font-bold tracking-wide text-[#FF6B6B] hidden md:block">
             Vẽ Chân Dung
           </Link>
         </div>
@@ -170,6 +172,7 @@ const Header = () => {
         <div
           className={`${menuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 md:flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 text-gray-700 bg-white absolute md:static top-16 left-0 w-full md:w-auto shadow-md md:shadow-none p-6 md:p-0`}
         >
+
           <ul className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             {[
               { name: 'Trang chủ', href: '/' },
@@ -195,8 +198,8 @@ const Header = () => {
         </div>
 
         {/* Icon chức năng */}
-        <div className="hidden md:flex items-center space-x-6">
-          <div className="relative w-48">
+        <div className="flex items-center space-x-4 md:space-x-6">
+          <div className="block md:hidden relative w-40">
             <input
               type="text"
               placeholder="Tìm kiếm..."
@@ -272,7 +275,7 @@ const Header = () => {
 
           {/* Cart panel trượt mượt */}
           <div
-            className={`fixed right-0 top-0 z-50 h-full w-[400px] bg-white shadow-lg transform transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"
+            className={`fixed right-0 top-0 z-50 h-full w-full max-w-[400px] bg-white shadow-lg transform transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"
               } flex flex-col`}
           >
             <div className="flex items-center justify-between p-4 border-b">

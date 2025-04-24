@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
@@ -46,7 +46,6 @@ const reviewsData: Record<string, { name: string; rating: number; message: strin
 
 export default function ProductDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const id = params?.id as string; // Ép kiểu id về string
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -68,10 +67,12 @@ export default function ProductDetailPage() {
     };
     const productType = product ? getProductType(product.name) : null;
     const [selectedOption, setSelectedOption] = useState("");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedProductImage, setSelectedProductImage] = useState<string>(product?.imageUrl || "");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [selectedUserImage, setSelectedUserImage] = useState<File | null>(null);
     const [activeTab, setActiveTab] = useState("details");
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     useEffect(() => {
         async function fetchProduct() {
             if (!id) return; // Kiểm tra id hợp lệ trước khi fetch
@@ -80,6 +81,7 @@ export default function ProductDetailPage() {
                 if (!response.ok) throw new Error('Sản phẩm không tồn tại');
                 const data: Product = await response.json();
                 setProduct(data);
+                setCurrentImageIndex(0);
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu sản phẩm:', error);
                 setProduct(null);
@@ -94,7 +96,15 @@ export default function ProductDetailPage() {
     const handleQuantityChange = (value: number) => {
         setQuantity(Math.max(1, value));
     };
+    const handleNextImage = () => {
+        if (!product?.images?.length) return;
+        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+    };
 
+    const handlePrevImage = () => {
+        if (!product?.images?.length) return;
+        setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+    };
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
 
@@ -201,50 +211,6 @@ export default function ProductDetailPage() {
 
 
 
-    const handleOrderNow = async () => {
-        if (!product) return;
-
-        const storedUser = localStorage.getItem('user');
-        const user = storedUser ? JSON.parse(storedUser) : null;
-
-        const orderData = {
-            productId: product.id,
-            productName: product.name,
-            selectedOption,
-            imageUrl: imagePreview ?? '',
-            drawStyle: designType === 'request' ? drawStyle : '',
-            font: designType === 'request' ? font : '',
-            customText: designType === 'request' ? printName : '',
-            quantity,
-            price: product.price,
-            designType,
-        };
-
-        // 👉 Nếu chưa đăng nhập → dùng localStorage như cũ
-        if (!user?.id) {
-            localStorage.setItem('orderData', JSON.stringify([orderData]));
-            router.push('/checkout');
-            return;
-        }
-
-        try {
-            const cartId = await getOrCreateCart(user.id); // lấy hoặc tạo cart
-            const res = await fetch('/api/cartItem', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...orderData,
-                    cartId,
-                }),
-            });
-
-            if (!res.ok) throw new Error('Không thể thêm vào giỏ hàng');
-
-            router.push('/checkout');
-        } catch (err) {
-            console.error('Lỗi thêm giỏ hàng:', err);
-        }
-    };
 
 
     if (loading) {
@@ -264,13 +230,18 @@ export default function ProductDetailPage() {
                 className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                     <Image
-                        src={selectedProductImage || product.imageUrl}
+                        src={product.images?.[currentImageIndex]?.url || product.imageUrl}
                         alt={product.name}
                         width={600}
                         height={600}
                         className="rounded-xl w-full object-cover"
                         priority
                     />
+                    <div className="flex justify-between items-center mt-2">
+                        <Button onClick={handlePrevImage}>← Trước</Button>
+                        <span>{currentImageIndex + 1} / {product.images.length}</span>
+                        <Button onClick={handleNextImage}>Tiếp →</Button>
+                    </div>
                     <div className="flex gap-2 mt-4">
                         {product.images.map((img, index) => (
                             <button key={index} onClick={() => setSelectedProductImage(img.url)}>
@@ -414,12 +385,7 @@ export default function ProductDetailPage() {
                     </div>
 
                     <div className="flex gap-4">
-                        <Button
-                            className="bg-[#FF6B6B] text-white hover:bg-[#e95b5b] rounded-full px-6 py-2"
-                            onClick={handleOrderNow}
-                        >
-                            Đặt hàng ngay
-                        </Button>
+
                         <Button
                             variant="outline"
                             onClick={handleAddToCart}

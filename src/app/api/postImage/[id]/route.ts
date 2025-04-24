@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 
 // Lấy hình ảnh theo ID
-export async function GET_BY_ID(req: Request) {
+export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
         const id = url.pathname.split("/").pop();
@@ -13,7 +13,7 @@ export async function GET_BY_ID(req: Request) {
         }
 
         const image = await prisma.postImage.findUnique({
-            where: { id },
+            where: { id: Number(id) },
         });
 
         if (!image) {
@@ -97,7 +97,7 @@ export async function DELETE(req: NextRequest) {
 
         // 👉 Xóa hình ảnh với ID
         await prisma.postImage.delete({
-            where: { id },
+            where: { id: Number(id) },
         });
 
         return NextResponse.json({ message: 'Đã xóa hình ảnh thành công' }, { status: 200 });
