@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
-import { pusherServer } from "@/lib/pusher";
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
@@ -130,10 +129,6 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        await pusherServer.trigger("admin-channel", "new-notification", {
-            title: "🛒 Đơn hàng mới!",
-            content: `Khách hàng ${name} vừa đặt hàng.`,
-        });
 
         return NextResponse.json({ success: true, order: newOrder }, { status: 201 });
     } catch (err) {
