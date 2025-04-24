@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET_TAG_BY_ID(req: NextRequest) {
+export async function GET(req: NextRequest) {
     try {
         const id = req.nextUrl.pathname.split('/').pop();
         if (!id) return NextResponse.json({ error: 'ID không hợp lệ' }, { status: 400 });
@@ -15,7 +15,7 @@ export async function GET_TAG_BY_ID(req: NextRequest) {
     }
 }
 
-export async function PUT_TAG(req: NextRequest) {
+export async function PUT(req: NextRequest) {
     try {
         const id = req.nextUrl.pathname.split('/').pop();
         if (!id) return NextResponse.json({ error: 'ID không hợp lệ' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function PUT_TAG(req: NextRequest) {
     }
 }
 
-export async function DELETE_TAG(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
     try {
         const id = req.nextUrl.pathname.split('/').pop();
         if (!id) return NextResponse.json({ error: 'ID không hợp lệ' }, { status: 400 });
