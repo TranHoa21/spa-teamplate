@@ -1,5 +1,5 @@
-
 import nodemailer from 'nodemailer';
+
 
 export const transporter = nodemailer.createTransport({
     service: 'Gmail', // hoặc SMTP provider khác
