@@ -19,6 +19,7 @@ interface BlogPost {
         slug: string;
     };
 }
+
 interface Product {
     id: number;
     name: string;
@@ -37,7 +38,6 @@ interface Comment {
     createdAt: string;
 }
 
-
 export default function BlogDetailPage() {
     const { slug } = useParams();
     const [post, setPost] = useState<BlogPost | null>(null);
@@ -46,22 +46,25 @@ export default function BlogDetailPage() {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [user, setUser] = useState<{ name: string; id: string } | null>(null);
+
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser)); // { id, name, role }
+            setUser(JSON.parse(storedUser));
         }
         const fetchPost = async () => {
             const res = await fetch(`/api/posts/${slug}`);
             const data = await res.json();
             setPost(data.post);
+
             const commentsRes = await fetch(`/api/comment?postId=${slug}`);
             const commentsData = await commentsRes.json();
             setComments(commentsData);
-            // fetch related posts if needed
+
             const related = await fetch('/api/posts');
             const relatedData = await related.json();
             setRelatedPosts(relatedData.filter((p: BlogPost) => p.slug !== slug).slice(0, 3));
+
             const product = await fetch('/api/products');
             const productData = await product.json();
             setProducts(productData);
@@ -76,7 +79,7 @@ export default function BlogDetailPage() {
         const commentData = {
             content: newComment,
             postSlug: slug,
-            author: user?.name || 'Anonymous', // Hoặc có thể dùng tên người dùng từ state
+            author: user?.name || 'Anonymous',
         };
 
         const res = await fetch(`/api/posts/${slug}/comments`, {
@@ -90,32 +93,34 @@ export default function BlogDetailPage() {
         if (res.ok) {
             const addedComment = await res.json();
             setComments([addedComment, ...comments]);
-            setNewComment(''); // Reset input
+            setNewComment('');
         }
     };
 
     const formatPrice = (price: string | number) => {
-        return new Intl.NumberFormat('vi-VN').format(Number(price)) + ' đ';
+        return '$' + Number(price).toLocaleString();
     };
-    if (!post) return <div className="text-center py-20">Đang tải bài viết...</div>;
+
+    if (!post) return <div className="text-center py-20 text-white">Loading post...</div>;
 
     return (
         <motion.section
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-7xl mx-auto py-12 px-4">
-            <nav className="text-sm text-gray-500 mb-4">
-                <Link href="/" className="hover:underline">Trang chủ</Link> / <Link href="/blog" className="hover:underline">Blog</Link> / <span className="text-[#FF6B6B]">{post.title}</span>
+            className=" mx-auto py-12 px-4 bg-[#031d2e] w-full"
+        >
+            <nav className="text-sm text-gray-400 mb-4">
+                <Link href="/" className="hover:underline">Home</Link> / <Link href="/blog" className="hover:underline">Blog</Link> / <span className="text-orange-400">{post.title}</span>
             </nav>
 
             <div className="flex flex-col lg:flex-row gap-10">
-                {/* LEFT: Bài viết chính */}
+                {/* LEFT: Main Post */}
                 <div className="flex-1">
-                    <h1 className="text-4xl font-extrabold text-[#FF6B6B] mb-4 leading-tight">{post.title}</h1>
+                    <h1 className="text-4xl font-extrabold text-orange-400 mb-4 leading-tight">{post.title}</h1>
 
                     <div className="text-sm text-gray-400 mb-6">
-                        <span>{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
+                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                     </div>
 
                     {post.imageUrl && (
@@ -131,55 +136,51 @@ export default function BlogDetailPage() {
                     )}
 
                     <article
-                        className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+                        className="prose prose-lg max-w-none text-gray-300 leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     ></article>
 
-                    {/* Bài viết nổi bật và các sản phẩm */}
+                    {/* Comments Section */}
                     <div className="mt-[5%]">
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-6 ">Bình luận</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-6">Comments</h2>
                         <div className="space-y-6">
                             {comments.map((comment) => (
-                                <div key={comment.id} className="bg-[#F9F9F9] p-4 rounded-lg shadow-sm">
-                                    <p className="font-medium">{comment.author}</p>
-                                    <p className="text-sm text-gray-500">{new Date(comment.createdAt).toLocaleDateString('vi-VN')}</p>
-                                    <p className="mt-2">{comment.content}</p>
+                                <div key={comment.id} className="bg-[#031d2e] p-4 rounded-lg shadow-sm">
+                                    <p className="font-medium text-white">{comment.author}</p>
+                                    <p className="text-sm text-gray-400">{new Date(comment.createdAt).toLocaleDateString()}</p>
+                                    <p className="mt-2 text-gray-300">{comment.content}</p>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Nếu người dùng đã đăng nhập, hiển thị ô nhập bình luận */}
                         {user && (
                             <div className="mt-6">
                                 <textarea
-                                    className="w-full p-3 border rounded-lg"
-                                    placeholder="Nhập bình luận của bạn..."
+                                    className="w-full p-3 border border-gray-600 bg-[#031d2e] text-white rounded-lg"
+                                    placeholder="Write a comment..."
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
                                 <button
                                     onClick={handleAddComment}
-                                    className="mt-2 bg-[#FF6B6B] text-white py-2 px-4 rounded-lg hover:bg-[#FF4B4B]"
+                                    className="mt-2 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600"
                                 >
-                                    Gửi bình luận
+                                    Post Comment
                                 </button>
                             </div>
                         )}
                     </div>
                 </div>
 
-
-
-
-                {/* RIGHT: Sidebar - Bài viết liên quan */}
-                <aside className="w-full lg:w-[35%] lg:pl-8 lg:border-l lg:border-gray-200">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-6">Bài viết nổi bật</h2>
+                {/* RIGHT: Sidebar */}
+                <aside className="w-full lg:w-[35%] lg:pl-8 lg:border-l lg:border-gray-700">
+                    <h2 className="text-2xl font-semibold text-white mb-6">Featured Posts</h2>
                     <div className="space-y-6">
                         {relatedPosts.slice(0, 4).map((rp) => (
                             <Link
                                 key={rp.slug}
                                 href={`/blog/${rp.slug}`}
-                                className="block bg-[#FFF7F0] p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300"
+                                className="block bg-[#08273c] p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300"
                             >
                                 {rp.imageUrl && (
                                     <Image
@@ -190,22 +191,23 @@ export default function BlogDetailPage() {
                                         className="w-full h-40 object-cover rounded-md mb-3"
                                     />
                                 )}
-                                <h3 className="text-lg font-semibold text-[#333] hover:text-[#FF6B6B] transition line-clamp-2">
+                                <h3 className="text-lg font-semibold text-white hover:text-orange-400 transition line-clamp-2">
                                     {rp.title}
                                 </h3>
                             </Link>
                         ))}
                     </div>
 
-                    <div className="w-full my-[15%]">
+                    <div className="w-full my-10">
                         <BannerSectionBlog />
                     </div>
-                    <div className="w-full my-[5%]">
-                        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Sản phẩm của chúng tôi </h1>
+
+                    <div className="w-full my-5">
+                        <h2 className="text-2xl font-semibold text-white mb-6">Our Products</h2>
                         <div className="grid grid-cols-1 gap-6">
                             {products.map((product) => (
-                                <Link key={product.id} href={`/san-pham/${product.id}`}>
-                                    <div className="group my-[3%] bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                                <Link key={product.id} href={`/products/${product.id}`}>
+                                    <div className="group bg-[#031d2e] rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 transform hover:-translate-y-1 cursor-pointer">
                                         <div className="relative w-full h-64 overflow-hidden">
                                             <Image
                                                 src={product.imageUrl}
@@ -214,24 +216,24 @@ export default function BlogDetailPage() {
                                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                             />
                                             {product.sale && (
-                                                <span className="absolute top-2 left-2 bg-[#FF6B6B] text-white text-sm px-3 py-1 rounded-full shadow">
-                                                    Đang giảm
+                                                <span className="absolute top-2 left-2 bg-orange-500 text-white text-sm px-3 py-1 rounded-full shadow">
+                                                    Sale
                                                 </span>
                                             )}
                                         </div>
                                         <div className="p-4 text-left space-y-2">
-                                            <h3 className="text-xl font-medium text-[#333333] group-hover:text-[#FF6B6B] transition-colors">
+                                            <h3 className="text-xl font-medium text-white group-hover:text-orange-400 transition">
                                                 {product.name}
                                             </h3>
-                                            <div className="flex items-center gap-1 text-[#FF6B6B]">
+                                            <div className="flex items-center gap-1 text-orange-400">
                                                 {Array.from({ length: product.rating }, (_, i) => (
-                                                    <Star key={i} size={16} fill="#FF6B6B" stroke="#FF6B6B" />
+                                                    <Star key={i} size={16} fill="#f97316" stroke="#f97316" />
                                                 ))}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <p className="text-[#FF6B6B] font-semibold">{formatPrice(product.price)}</p>
+                                                <p className="text-orange-400 font-semibold">{formatPrice(product.price)}</p>
                                                 {product.sale && product.originalPrice && (
-                                                    <p className="text-[#7D7D7D] line-through text-sm">{formatPrice(product.originalPrice)}</p>
+                                                    <p className="text-gray-500 line-through text-sm">{formatPrice(product.originalPrice)}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -243,21 +245,20 @@ export default function BlogDetailPage() {
                 </aside>
             </div>
 
-
-            <div className="w-full mt-[6%] border-t border-gray-200">
-                <h1 className="text-4xl font-semibold text-gray-900 mb-4 pt-[3%]">Có thể bạn sẽ thích</h1>
+            {/* Related posts */}
+            <div className="w-full mt-12 border-t border-gray-700 pt-8">
+                <h1 className="text-4xl font-semibold text-white mb-8">You Might Also Like</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {relatedPosts.slice(0, 4).map((rp) => (
-                        <Link key={rp.slug} href={`/blog/${rp.slug}`} className="block bg-[#FFF1E6] p-4 rounded-lg shadow hover:shadow-md transition">
+                        <Link key={rp.slug} href={`/blog/${rp.slug}`} className="block bg-[#08273c] p-4 rounded-lg shadow hover:shadow-md transition">
                             {rp.imageUrl && (
                                 <Image src={rp.imageUrl} alt={rp.title} width={400} height={250} className="w-full h-40 object-cover rounded-md mb-3" />
                             )}
-                            <h3 className="text-lg font-semibold text-[#333] hover:text-[#FF6B6B] line-clamp-2">{rp.title}</h3>
+                            <h3 className="text-lg font-semibold text-white hover:text-orange-400 line-clamp-2">{rp.title}</h3>
                         </Link>
                     ))}
                 </div>
             </div>
         </motion.section>
     );
-
 }

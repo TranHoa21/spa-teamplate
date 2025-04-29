@@ -1,43 +1,50 @@
-// app/not-found.tsx
 'use client';
-import Link from "next/link";
-import { motion } from "framer-motion";
+
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function NotFound() {
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-pink-100">
-            {/* Hiệu ứng ánh sáng nền */}
-            <div className="absolute w-[30rem] h-[30rem] bg-pink-300 rounded-full opacity-30 blur-[120px] animate-pulse -z-10 top-10 left-10" />
-            <div className="absolute w-[30rem] h-[30rem] bg-blue-300 rounded-full opacity-30 blur-[120px] animate-pulse -z-10 bottom-10 right-10" />
-
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#15394c] text-white px-4 text-center">
             <motion.h1
-                className="text-6xl font-extrabold text-gray-800 mb-4 drop-shadow-lg"
-                initial={{ opacity: 0, y: -20 }}
+                className="text-[120px] font-bold leading-none"
+                initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.6 }}
             >
                 404
             </motion.h1>
 
-            <motion.p
-                className="text-2xl text-gray-600 mb-6"
+            <motion.h2
+                className="text-2xl tracking-widest uppercase mt-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
             >
-                Trang bạn tìm không tồn tại 🐚
+                Page Not Found
+            </motion.h2>
+
+            <motion.p
+                className="text-gray-300 mt-6 text-base"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+            >
+                Sorry. We ca not seem to find the page you are looking for.
             </motion.p>
 
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.7 }}
+                className="mt-10"
             >
                 <Link
                     href="/"
-                    className="px-6 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition shadow-md"
+                    className="relative inline-block px-10 py-3 bg-orange-500 text-white font-semibold rounded-md hover:bg-orange-600 transition-all"
                 >
-                    Quay lại trang chủ
+                    <span className="absolute inset-0 transform rotate-3 scale-105 rounded-md bg-orange-500 opacity-20"></span>
+                    BACK TO HOME
                 </Link>
             </motion.div>
         </div>

@@ -1,0 +1,7 @@
+.floating-image {
+    animation: 
+      float 4s ease-in-out infinite,
+      spinSlow 20s linear infinite;
+    will-change: transform;
+    transition: transform 0.3s ease-in-out;
+  }

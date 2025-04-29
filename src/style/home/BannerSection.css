@@ -1,7 +1,5 @@
 @media (max-width: 525px) {
-    #hero {
-        margin-top: 60px; /* Đẩy xuống để tránh bị header che */
-    }
+    
 
     #hero .max-w-6xl {
         padding-left: 10px; /* Căn sát trái */
@@ -23,3 +21,31 @@
         font-size: 14px;
     }
 }
+@keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  @keyframes spinSlow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .floating-image {
+    animation: 
+      float 4s ease-in-out infinite,
+      spinSlow 20s linear infinite;
+    will-change: transform;
+    transition: transform 0.3s ease-in-out;
+  }

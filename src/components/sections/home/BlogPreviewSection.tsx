@@ -1,90 +1,99 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { FaUser, FaComment } from "react-icons/fa";
 
-interface BlogPost {
-    id: string;
-    title: string;
-    slug: string;
-    imageUrl: string;
-    metaDescription: string;
-}
+const blogPosts = [
+    {
+        title: "Consectetur Adipiscing Elit Sedeius Mod Tempor Incididunt Ut Labore.",
+        description:
+            "Consectetur adipiscing elit, sed do eiusmod tempor incididuesdeentiut labore et dolore magna aliquapspendisse and the gravida.",
+        image: "/images/reading-lines-hand-man-s-hands-close-view.jpg",
+        date: "July 29, 2020",
+        author: "Admin",
+        comments: 0,
+        link: "/blog_detail",
+    },
+    {
+        title: "Consectetur Adipiscing Elit Sedeius Mod Tempor Incididunt Ut Labore.",
+        description:
+            "Consectetur adipiscing elit, sed do eiusmod tempor incididuesdeentiut labore et dolore magna aliquapspendisse and the gravida.",
+        image: "/images/high-angle-woman-reading-tarot_23-2150396503.jpg",
+        date: "July 29, 2020",
+        author: "Admin",
+        comments: 0,
+        link: "/blog_detail",
+    },
+    {
+        title: "Consectetur Adipiscing Elit Sedeius Mod Tempor Incididunt Ut Labore.",
+        description:
+            "Consectetur adipiscing elit, sed do eiusmod tempor incididuesdeentiut labore et dolore magna aliquapspendisse and the gravida.",
+        image: "/images/reading-lines-hand-man-s-hands.jpg",
+        date: "July 29, 2020",
+        author: "Admin",
+        comments: 0,
+        link: "/blog_detail",
+    },
+];
 
-export default function BlogPreviewSection() {
-    const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const res = await fetch("/api/posts");
-                const data = await res.json();
-                console.log("check data", data)
-                // Nếu API trả về object chứa mảng post
-                const posts: BlogPost[] = Array.isArray(data)
-                    ? data
-                    : Array.isArray(data.posts)
-                        ? data.posts
-                        : [];
-
-
-
-                setBlogPosts(posts.slice(0, 3));
-            } catch (err) {
-                console.error("Lỗi khi fetch bài viết:", err);
-            }
-        };
-
-        fetchPosts();
-    }, []);
-
+const BlogSection: React.FC = () => {
     return (
-        <motion.section
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="bg-white py-16 px-4">
-            <div
-
-                className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl font-bold text-[#333]">Bài viết nổi bật</h2>
-                    <Link
-                        href="/blog"
-                        className="text-[#FF6B6B] font-medium hover:underline"
-                    >
-                        Xem thêm →
-                    </Link>
+        <section className="py-20 bg-[#08273c]">
+            <div className="container mx-auto max-w-7xl px-4">
+                <div className="text-center mb-16">
+                    <h1 className="text-4xl font-bold text-white mb-4">Our Latest Blog</h1>
+                    <p className="text-base text-white leading-relaxed">
+                        Consectetur adipiscing elit, sed do eiusmod tempor incididuesdeentiut labore <br />
+                        etesde dolore magna aliquapspendisse and the gravida.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {blogPosts.map((post) => (
-                        <Link
-                            key={post.id}
-                            href={`/blog/${post.slug}`}
-                            className="group bg-[#FFF1E6] rounded-xl overflow-hidden shadow hover:shadow-md transition block"
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {blogPosts.map((post, index) => (
+                        <div
+                            key={index}
+                            className="group bg-[#07273c] rounded-xl overflow-hidden shadow-md transition duration-300"
                         >
-                            <Image
-                                src={post.imageUrl}
-                                alt={post.title}
-                                width={400}
-                                height={250}
-                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform"
-                            />
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-[#333] group-hover:text-[#FF6B6B]">
-                                    {post.title}
-                                </h3>
-                                <p className="text-sm text-[#7D7D7D] mt-1 line-clamp-3">
-                                    {post.metaDescription}
-                                </p>
+                            <div className="relative w-full h-60">
+                                <Link href={post.link}>
+                                    <Image
+                                        src={post.image}
+                                        alt={post.title}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </Link>
+                                <span className="absolute bottom-0 right-0 m-4 bg-orange-500 text-white text-xs font-semibold px-4 py-2 rounded-tl-lg">
+                                    {post.date}
+                                </span>
                             </div>
-                        </Link>
+
+                            <div className="p-6">
+                                <ul className="flex items-center gap-4 mb-4 text-gray-400 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <FaUser className="w-4 h-4" />
+                                        By - {post.author}
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <FaComment className="w-4 h-4" />
+                                        {post.comments} comments
+                                    </li>
+                                </ul>
+
+                                <h4 className="text-lg font-bold text-white mb-2 transition-colors duration-300 group-hover:text-orange-500 leading-snug">
+                                    <Link href={post.link}>{post.title}</Link>
+                                </h4>
+
+                                <p className="text-gray-300 text-sm leading-relaxed">{post.description}</p>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
-        </motion.section>
+        </section>
     );
-}
+};
+
+export default BlogSection;

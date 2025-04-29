@@ -1,5 +1,5 @@
-// components/Blog.js
 "use client"
+
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from "framer-motion";
@@ -12,18 +12,18 @@ interface BlogPost {
     metaDescription: string;
     category: Category;
     createdAt: string;
-
 }
 
 interface Category {
     name: string;
     slug: string;
 }
+
 const Blog = () => {
     const [posts, setPosts] = useState<BlogPost[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState<string[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState('Tất cả');
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     useEffect(() => {
         fetchPosts();
@@ -55,8 +55,9 @@ const Blog = () => {
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category);
     };
+
     const filteredPosts = posts?.filter(post =>
-        selectedCategory === 'Tất cả' || post.category?.name === selectedCategory
+        selectedCategory === 'All' || post.category?.name === selectedCategory
     );
 
     return (
@@ -64,21 +65,24 @@ const Blog = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="container mx-auto py-12">
+            className=" mx-auto py-12 px-4 bg-[#031d2e] w-full"
+        >
             {/* Hero Section */}
             <section className="text-center mb-10">
-                <h1 className="text-4xl font-bold text-gray-900">Blog / Câu chuyện thương hiệu / Góc sáng tạo</h1>
-                <p className="text-lg text-gray-600 mt-4">Khám phá những bài viết sáng tạo và câu chuyện thú vị về thương hiệu của chúng tôi.</p>
+                <h1 className="text-4xl font-bold text-white">Blog / Brand Story / Creative Corner</h1>
+                <p className="text-lg text-gray-300 mt-4">
+                    Discover creative articles and fascinating stories about our brand journey.
+                </p>
             </section>
 
             {/* Filter / Category Tabs */}
             <div className="mb-8">
-                <div className="flex justify-center gap-6">
-                    {['Tất cả', ...categories].map((category, index) => (
+                <div className="flex justify-center gap-6 flex-wrap">
+                    {['All', ...categories].map((category, index) => (
                         <button
                             key={index}
                             onClick={() => handleCategoryChange(category)}
-                            className={`text-lg font-semibold ${selectedCategory === category ? 'text-blue-600' : 'text-gray-600'} hover:text-blue-400`}
+                            className={`text-lg font-semibold ${selectedCategory === category ? 'text-orange-400' : 'text-gray-300'} hover:text-orange-300`}
                         >
                             {category}
                         </button>
@@ -89,10 +93,10 @@ const Blog = () => {
             {/* Blog Grid/List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {loading ? (
-                    <p>Đang tải...</p>
+                    <p className="text-white">Loading...</p>
                 ) : (
                     filteredPosts?.map((post) => (
-                        <div key={post.id} className="bg-white shadow-md rounded-lg overflow-hidden">
+                        <div key={post.id} className="bg-[#031d2e] shadow-md rounded-lg overflow-hidden">
                             <div className="relative w-full h-48">
                                 <Image
                                     src={post.imageUrl}
@@ -102,10 +106,12 @@ const Blog = () => {
                                 />
                             </div>
                             <div className="p-4">
-                                <h2 className="text-2xl font-semibold text-gray-800">{post.title}</h2>
-                                <p className="text-gray-600 mt-2">{post.metaDescription}</p>
-                                <p className="text-gray-500 text-sm mt-4">{new Date(post.createdAt).toLocaleDateString()}</p>
-                                <a href={`/blog/${post.slug}`} className="inline-block mt-4 text-blue-600 hover:underline">Đọc thêm</a>
+                                <h2 className="text-2xl font-semibold text-white">{post.title}</h2>
+                                <p className="text-gray-300 mt-2">{post.metaDescription}</p>
+                                <p className="text-gray-400 text-sm mt-4">{new Date(post.createdAt).toLocaleDateString()}</p>
+                                <a href={`/blog/${post.slug}`} className="inline-block mt-4 text-orange-400 hover:underline">
+                                    Read more
+                                </a>
                             </div>
                         </div>
                     ))
@@ -114,22 +120,22 @@ const Blog = () => {
 
             {/* Pagination / Load More */}
             <div className="text-center mt-8">
-                <button className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700">
-                    Xem thêm
+                <button className="px-6 py-2 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600">
+                    Load more
                 </button>
             </div>
 
             {/* Sidebar */}
             <div className="md:flex md:space-x-8 mt-12">
 
-                {/* Bài viết nổi bật */}
+                {/* Featured Posts */}
                 <div className="md:w-1/4">
-                    <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Bài viết nổi bật</h3>
+                    <div className="bg-[#08273c] p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-white mb-4">Featured Posts</h3>
                         <ul>
                             {posts?.slice(0, 5).map((post) => (
                                 <li key={post.id} className="mb-4">
-                                    <a href={`/post/${post.id}`} className="text-blue-600 hover:underline">
+                                    <a href={`/post/${post.id}`} className="text-orange-400 hover:underline">
                                         {post.title}
                                     </a>
                                 </li>
@@ -137,33 +143,36 @@ const Blog = () => {
                         </ul>
                     </div>
 
-                    {/* Đăng ký nhận bài mới */}
-                    <div className="mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Đăng ký nhận bài mới</h3>
+                    {/* Subscribe */}
+                    <div className="mt-8 bg-[#08273c] p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-white mb-4">Subscribe for Updates</h3>
                         <form className="flex flex-col">
                             <input
                                 type="email"
-                                placeholder="Nhập email của bạn"
-                                className="px-4 py-2 mb-4 border border-gray-300 rounded-lg"
+                                placeholder="Enter your email"
+                                className="px-4 py-2 mb-4 border border-gray-600 bg-[#031d2e] text-white rounded-lg"
                             />
                             <button
                                 type="submit"
-                                className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                                className="bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600"
                             >
-                                Đăng ký
+                                Subscribe
                             </button>
                         </form>
                     </div>
                 </div>
+
+                {/* Sidebar content */}
                 <div className="md:w-3/4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Chủ đề được quan tâm */}
-                    <div className="mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Chủ đề được quan tâm</h3>
+
+                    {/* Popular Topics */}
+                    <div className="mt-8 bg-[#08273c] p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-white mb-4">Popular Topics</h3>
                         <div className="flex flex-wrap gap-2">
-                            {['Quà tặng', 'Handmade', 'Thiết kế', 'Chăm sóc sản phẩm'].map((tag) => (
+                            {['Gifts', 'Handmade', 'Design', 'Product Care'].map((tag) => (
                                 <span
                                     key={tag}
-                                    className="px-3 py-1 bg-white border text-sm rounded-full text-gray-700 hover:bg-blue-100 cursor-pointer"
+                                    className="px-3 py-1 bg-[#031d2e] border text-sm rounded-full text-gray-300 hover:bg-orange-500 hover:text-white cursor-pointer"
                                 >
                                     {tag}
                                 </span>
@@ -171,52 +180,51 @@ const Blog = () => {
                         </div>
                     </div>
 
-                    {/* Câu nói truyền cảm hứng */}
-                    <div className="mt-8 bg-blue-50 p-6 rounded-lg shadow-md text-center">
-                        <p className="italic text-gray-700">
-                            “Sự sáng tạo là trí thông minh đang vui chơi.” – Albert Einstein
+                    {/* Inspirational Quote */}
+                    <div className="mt-8 bg-[#08273c] p-6 rounded-lg shadow-md text-center">
+                        <p className="italic text-gray-300">
+                            “Creativity is intelligence having fun.” – Albert Einstein
                         </p>
                     </div>
 
-                    {/* Banner theo dõi fanpage */}
-                    <div className="mt-8 bg-pink-100 p-6 rounded-lg shadow-md text-center">
-                        <p className="text-lg font-semibold text-pink-800 mb-2">
-                            Bạn đã theo dõi chúng tôi chưa?
+                    {/* Follow Banner */}
+                    <div className="mt-8 bg-[#08273c] p-6 rounded-lg shadow-md text-center">
+                        <p className="text-lg font-semibold text-white mb-2">
+                            Are you following us yet?
                         </p>
                         <a
                             href="https://facebook.com"
                             target="_blank"
-                            className="text-pink-600 underline hover:text-pink-800"
+                            className="text-orange-400 underline hover:text-orange-500"
                         >
-                            Theo dõi fanpage ngay →
+                            Follow our fanpage →
                         </a>
                     </div>
 
-                    {/* Được xem nhiều nhất */}
-                    <div className="mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Được xem nhiều nhất</h3>
-                        <ul className="list-disc ml-4 text-gray-700 space-y-2">
+                    {/* Most Viewed */}
+                    <div className="mt-8 bg-[#08273c] p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-white mb-4">Most Viewed</h3>
+                        <ul className="list-disc ml-4 text-gray-300 space-y-2">
                             <li>
                                 <a href="#" className="hover:underline">
-                                    Tại sao quà handmade lại “đắt giá”?
+                                    Why Handmade Gifts Are Priceless
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:underline">
-                                    Gợi ý món quà theo cung hoàng đạo
+                                    Zodiac Sign Gift Suggestions
                                 </a>
                             </li>
                             <li>
                                 <a href="#" className="hover:underline">
-                                    5 kiểu bao bì hút mắt người nhận
+                                    5 Eye-catching Packaging Ideas
                                 </a>
                             </li>
                         </ul>
                     </div>
+
                 </div>
             </div>
-
-
         </motion.div>
     );
 };

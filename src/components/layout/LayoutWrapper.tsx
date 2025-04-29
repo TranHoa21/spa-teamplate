@@ -7,7 +7,6 @@ import Footer from "@/components/layout/Footer";
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAdminPage = pathname.startsWith("/admin");
-
     return (
         <>
             {!isAdminPage && <Header />}
