@@ -115,7 +115,7 @@ export default function CheckoutPage() {
         formData.append("items", JSON.stringify(items));
 
         try {
-            const response = await fetch("/api/orders", {
+            const response = await fetch("/api/booking", {
                 method: "POST",
                 body: formData,
             });

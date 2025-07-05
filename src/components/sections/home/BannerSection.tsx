@@ -1,90 +1,141 @@
-'use client';
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import "@/style/home/BannerSection.css";
-import { motion } from "framer-motion";
-import Image from "next/image";
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import clsx from 'clsx'
+import { Cormorant_Garamond } from 'next/font/google'
 
-export default function BannerSection() {
-    const router = useRouter();
-    const [isClicked, setIsClicked] = useState(false);
+const products = [
+    '/images/product1.png',
+    '/images/product2.png',
+    '/images/product3.png',
+]
 
-    const handleClick = () => {
-        setIsClicked(true);
-        setTimeout(() => {
-            router.push("/san-pham");
-        }, 300); // Thời gian delay hiệu ứng trước khi chuyển trang
-    };
+const cormorant = Cormorant_Garamond({
+    subsets: ['latin'],
+    weight: ['300', '400', '500'],
+})
 
+export default function HeroSection() {
+    const [current, setCurrent] = useState(0)
+    const [hasMounted, setHasMounted] = useState(false)
+
+    const handleNext = () => {
+        setCurrent((prev) => (prev + 1) % products.length)
+    }
+
+    const handlePrev = () => {
+        setCurrent((prev) => (prev - 1 + products.length) % products.length)
+    }
+
+    useEffect(() => {
+        setHasMounted(true)
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            handleNext()
+        }, 5000)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    if (!hasMounted) return null // ✅ Ngăn lỗi hydration
 
     return (
-        <motion.section
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            id="hero"
-            className="text-white m-0 sm:m-auto py-4 sm:py-6 md:py-12 bg-[#0B2239] relative"
-            style={{ backgroundImage: `url("/images/bg1.jpg")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        >
-            <button className="hidden md:block absolute left-6 top-1/2 transform -translate-y-1/2 bg-[#102C47] text-white text-xs px-5 py-2 hover:bg-orange-500 transition-all z-20" style={{ clipPath: 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)' }}>
-                ◀ PREV
-            </button>
+        <section className="relative w-full min-h-[110vh] overflow-visible flex items-center justify-center">
+            {/* Background split layout for desktop */}
+            <div className="absolute inset-0 z-0 hidden md:flex">
+                <div className="w-1/2 bg-[#899f87]" />
+                <div
+                    className="w-1/2 bg-cover bg-center"
+                    style={{ backgroundImage: "url('/images/background-banner.png')" }}
+                />
+            </div>
 
-            <button className="hidden md:block absolute right-6 top-1/2 transform -translate-y-1/2 bg-[#102C47] text-white text-xs px-5 py-2 hover:bg-orange-500 transition-all z-20" style={{ clipPath: 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)' }}>
-                NEXT ▶
-            </button>
+            {/* Full background for mobile */}
+            <div
+                className="absolute inset-0 z-0 md:hidden bg-cover bg-center"
+                style={{ backgroundImage: "url('/images/background-banner.png')" }}
+            />
 
-            <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10">
-
-                {/* Left Content */}
-                <div className="flex-1 text-left sm:pl-8 sm:mt-0">
-                    <p className="text-orange-500 text-sm sm:text-lg font-semibold mb-2">What is Your Sign ?</p>
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">
-                        Read Your Daily <br /> Horoscope Today
+            {/* Text and button – Desktop */}
+            <div className="hidden md:flex absolute inset-0 z-10 items-center justify-center">
+                <div className="text-white text-center px-6">
+                    <h1 className={`${cormorant.className} text-7xl leading-tight mb-6`}>
+                        Let nature take <br />
+                        care of your body <br />
+                        and soul
                     </h1>
-                    <p className="text-gray-300 text-sm sm:text-base mb-6">
-                        Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore etesde dolore magna aliqua suspendisse and the gravida.
-                    </p>
-                    <button
-                        onClick={handleClick}
-                        className={`inline-block bg-orange-500 text-white font-medium px-4 py-3 rounded-full
-          transition-all duration-300 ease-in-out transform 
-          ${isClicked ? 'scale-90 opacity-80' : 'hover:scale-105 hover:shadow-lg'}`}
-                        style={{
-                            clipPath: 'polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%)'
-                        }}
-                    >
-                        READ MORE
+                    <button className="bg-white text-black px-8 py-3 font-medium hover:bg-gray-200 transition">
+                        Shop now →
                     </button>
                 </div>
-
-                {/* Right Image */}
-                <motion.div
-                    className="flex justify-center md:justify-end w-full sm:w-auto"
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    viewport={{ once: true }}
-                >
-                    <div className="relative w-[400px] sm:w-[400px] md:w-[600px] max-w-full floating-image">
-                        <Image
-                            src="/images/snapedit_1745651487399.png"
-                            alt="Horoscope Chart"
-                            width={500}
-                            height={500}
-                            className="rounded-full w-full object-cover"
-                            loading="lazy"
-                        />
-
-                    </div>
-                </motion.div>
-
             </div>
-        </motion.section>
 
+            {/* Text and button – Mobile */}
+            <div className="md:hidden absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center text-white">
+                <h1 className={`${cormorant.className} text-3xl leading-snug mb-4`}>
+                    Let nature take <br />
+                    care of your <br />
+                    body and soul
+                </h1>
+                <button className="bg-white text-black px-6 py-2 font-medium rounded hover:bg-gray-200 transition">
+                    Shop now →
+                </button>
+            </div>
 
+            {/* Product image – responsive position */}
+            <div
+                className={clsx(
+                    'absolute z-20',
+                    'bottom-[-80px] md:left-[20%] md:-translate-x-1/2',
+                    'left-1/2 -translate-x-1/2' // Mobile center
+                )}
+            >
+                <div className="relative w-[220px] h-[400px] md:w-[340px] md:h-[620px]">
+                    <Image
+                        src={products[current]}
+                        alt="product"
+                        fill
+                        className="object-contain transition duration-500 ease-in-out"
+                    />
+                </div>
 
+                {/* Slider controls – Mobile */}
+                <div className="flex md:hidden mt-4 items-center justify-center gap-4 text-white z-30">
+                    <button onClick={handlePrev} className="text-xl">←</button>
+                    <div className="flex gap-1">
+                        {products.map((_, index) => (
+                            <div
+                                key={index}
+                                className={clsx(
+                                    'w-2 h-2 rounded-full',
+                                    index === current ? 'bg-white' : 'bg-white/50'
+                                )}
+                            />
+                        ))}
+                    </div>
+                    <button onClick={handleNext} className="text-xl">→</button>
+                </div>
+            </div>
 
-    );
+            {/* Slider controls – Desktop */}
+            <div className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-20 flex-col items-center gap-6 text-white">
+                <button onClick={handlePrev} className="text-2xl">←</button>
+                <div className="flex flex-col gap-2">
+                    {products.map((_, index) => (
+                        <div
+                            key={index}
+                            className={clsx(
+                                'w-2 h-2 rounded-full',
+                                index === current ? 'bg-white' : 'bg-white/50'
+                            )}
+                        />
+                    ))}
+                </div>
+                <button onClick={handleNext} className="text-2xl">→</button>
+            </div>
+        </section>
+    )
 }

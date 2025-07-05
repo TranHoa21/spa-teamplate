@@ -48,6 +48,8 @@ export default function AdminSidebar() {
         { label: 'Đơn hàng', href: '/admin/orders' },
         { label: 'Sản phẩm', href: '/admin/products' },
         { label: 'Bài viết', href: '/admin/blogs' },
+        { label: 'Zone', href: '/admin/zone' },
+        { label: 'Parks', href: '/admin/parks' },
         {
             label: 'Thông báo',
             href: '/admin/notifications',

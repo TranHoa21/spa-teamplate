@@ -23,7 +23,7 @@ const Transactions = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`/api/orders`); // Next.js API route
+                const response = await axios.get(`/api/booking`); // Next.js API route
                 const sortedData = response.data.orders.sort((a: Order, b: Order) => b.id - a.id);
                 setData(sortedData);
             } catch (error) {

@@ -12,7 +12,7 @@ export default function Chart() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get('/api/orders');
+                const response = await axios.get('/api/booking');
 
                 // Kiểm tra nếu API trả về `response.data.orders`, nếu không thì dùng `response.data`
                 const orders = response.data.orders || response.data;

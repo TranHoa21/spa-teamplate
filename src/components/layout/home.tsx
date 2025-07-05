@@ -1,28 +1,24 @@
 'use client';
 import BannerSection from "@/components/sections/home/BannerSection";
-import Services from "@/components/sections/home/Services"
+import FeaturedProducts from "@/components/sections/home/FeaturedProducts"
 import React from 'react';
-import WhyUs from "@/components/sections/home/WhyUs";
-import KnowZodiacSection from "@/components/sections/home/KnowZodiacSection"
-import ZodiacSection from "@/components/sections/home/ZodiacSection";
-import BlogPreviewSection from "@/components/sections/home/BlogPreviewSection";
-import CustomerTestimonials from "@/components/sections/home/CustomerTestimonials";
-import WhyChooseUs from "@/components/sections/home/WhyChooseUs";
-import ProductsSlider from "@/components/sections/home/ProductsSlider";
-import DailyOverview from "@/components/sections/home/DailyOverview"
+import RelaxationSection from "@/components/sections/home/RelaxationSection";
+import ProductListing from "@/components/sections/home/ProductListing"
+import AboutSection from "@/components/sections/home/AboutSection";
+import SkinDiagnosisSection from "@/components/sections/home/SkinDiagnosisSection";
+import ProductTestimonial from "@/components/sections/home/ProductTestimonial";
+import SubscribeSection from "@/components/sections/home/SubscribeSection"
 const HomePage = () => {
     return (
         <>
             <BannerSection />
-            <WhyUs />
-            <Services />
-            <ZodiacSection />
-            <KnowZodiacSection />
-            <CustomerTestimonials />
-            <WhyChooseUs />
-            <BlogPreviewSection />
-            <ProductsSlider />
-            <DailyOverview />
+            <RelaxationSection />
+            <FeaturedProducts />
+            <AboutSection />
+            <ProductListing />
+            <SkinDiagnosisSection />
+            <ProductTestimonial />
+            <SubscribeSection />
         </>
     );
 };

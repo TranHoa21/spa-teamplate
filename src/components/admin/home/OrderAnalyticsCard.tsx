@@ -14,7 +14,7 @@ const OrderAnalyticsCard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('/api/orders');
+                const response = await axios.get('/api/booking');
                 const data = response.data.orders;
 
                 console.log("API Response:", data);

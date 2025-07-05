@@ -1,126 +1,79 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { FaFacebookF, FaTwitter, FaGooglePlusG, FaYoutube, FaAngleRight, FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
+import { Instagram, Twitter, Facebook } from 'lucide-react';
+import Link from 'next/link';
 
-const Footer: React.FC = () => {
+export default function Footer() {
     return (
-        <footer className="bg-[#031d2e] text-[#aabed8] pt-20 text-sm">
-            <div className="container mx-auto max-w-7xl px-4">
-                {/* Newsletter */}
-                <div className="pb-12 border-b border-[#22445e] mb-12">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                        <div className="text-center lg:text-left">
-                            <h1 className="text-3xl font-serif mb-4 text-white">Our Newsletter</h1>
-                            <p>
-                                Get Your Daily Horoscope, Daily Lovescope and Daily<br />
-                                Tarot Directly In Your Inbox
-                            </p>
-                        </div>
-                        <div className="flex w-full lg:w-auto">
-                            <input
-                                type="email"
-                                placeholder="Enter your Email Here..."
-                                className="bg-[#07273c] text-[#aabed8] px-6 py-4 w-full lg:w-96 focus:outline-none"
-                            />
-                            <button className="bg-[#ff7b00] hover:bg-[#e96d00] text-white font-semibold px-6 py-4">
-                                SUBSCRIBE NOW
-                            </button>
-                        </div>
+        <footer className="bg-[#f4f7f3] text-[#37453b] px-6 py-12 text-sm">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-[#dce5db] pb-10">
+                {/* Logo + Info */}
+                <div className="flex flex-col items-start gap-4">
+                    <h2 className="text-2xl font-light tracking-wide">VELVETY</h2>
+                    <p className="italic text-sm">Facial & skincare</p>
+                    <div>
+                        <p className="mt-4">Opening hours</p>
+                        <p>Monday to Saturday:<br />10:30 a.m. to 7 p.m.</p>
+                    </div>
+                    <div className="flex gap-4 mt-4">
+                        <Instagram className="w-5 h-5 cursor-pointer" />
+                        <Twitter className="w-5 h-5 cursor-pointer" />
+                        <Facebook className="w-5 h-5 cursor-pointer" />
                     </div>
                 </div>
 
-                {/* Footer Widgets */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-16">
-                    {/* Logo & About */}
-                    <div>
-                        <Link href="/" className="inline-block mb-4">
-                            <Image src="/images/logo.png" alt="Logo" width={160} height={50} />
-                        </Link>
-                        <p className="mb-6">
-                            Consectetur adipiscing elited doesde eiusmod tempor incididunt ust labore et dolore magna aliqua.
-                        </p>
-                        <p className="mb-3 font-semibold text-white">Follow Us</p>
-                        <div className="flex gap-3">
-                            {[FaFacebookF, FaTwitter, FaGooglePlusG, FaYoutube].map((Icon, idx) => (
-                                <Link href="#" key={idx}>
-                                    <div className="w-9 h-9 flex items-center justify-center rounded-full bg-[#07273c] hover:bg-[#07273c]">
-                                        <Icon size={16} />
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Our Services */}
-                    <div>
-                        <h3 className="text-xl font-serif text-white mb-4">Our Services</h3>
-                        <ul className="space-y-4">
-                            {["Horoscopes", "Gemstones", "Numerology", "Tarot Cards", "Birth Journal"].map((item, idx) => (
-                                <li key={idx}>
-                                    <Link href="/serviceDetail" className="flex items-center gap-2 hover:text-white transition">
-                                        <FaAngleRight /> {item}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-xl font-serif text-white mb-4">Quick Links</h3>
-                        <ul className="space-y-4">
-                            {[
-                                { title: "About Us", link: "/about" },
-                                { title: "Blog", link: "/blog" },
-                                { title: "Astrologers", link: "/astrologer" },
-                                { title: "Appointment", link: "/appointment" },
-                                { title: "Contact Us", link: "/contact" },
-                            ].map((item, idx) => (
-                                <li key={idx}>
-                                    <Link href={item.link} className="flex items-center gap-2 hover:text-white transition">
-                                        <FaAngleRight /> {item.title}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-xl font-serif text-white mb-4">Contact Us</h3>
-                        <ul className="space-y-6">
-                            <li className="flex items-start gap-3">
-                                <FaMapMarkerAlt className="mt-1" />
-                                <p>Gotham Hall, 1356 Brodway Square, NY 10018, California, USA</p>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <FaEnvelope className="mt-1" />
-                                <div className="flex flex-col">
-                                    <Link href="mailto:astrology@example.com">astrology@example.com</Link>
-                                    <Link href="mailto:astro@example.com">astro@example.com</Link>
-                                </div>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <FaPhone className="mt-1" />
-                                <div className="flex flex-col">
-                                    <Link href="tel:+911800124105">+ (91) 1800-124-105</Link>
-                                    <Link href="tel:+911800326324">+ (91) 1800-326-324</Link>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                {/* Shop */}
+                <div>
+                    <h3 className="font-medium mb-3">Shop</h3>
+                    <ul className="space-y-2">
+                        <li><Link href="#">Skincare</Link></li>
+                        <li><Link href="#">Facial</Link></li>
+                        <li><Link href="#">Soap</Link></li>
+                        <li><Link href="#">Candles</Link></li>
+                        <li><Link href="#">Auto Fragrances</Link></li>
+                        <li><Link href="#">Gifts</Link></li>
+                    </ul>
                 </div>
 
-                {/* Copyright */}
-                <div className="text-center py-6 border-t border-[#22445e] text-xs">
-                    Copyright © 2025 Tran Hoa. All Right Reserved.
+                {/* Help Desk */}
+                <div>
+                    <h3 className="font-medium mb-3">Help Desk</h3>
+                    <ul className="space-y-2">
+                        <li><Link href="#">Chat</Link></li>
+                        <li><Link href="#">FAQ</Link></li>
+                        <li><Link href="#">Shipping & Returns</Link></li>
+                        <li><Link href="#">Contact</Link></li>
+                        <li><Link href="#">Policies</Link></li>
+                        <li><Link href="#">Accessibility</Link></li>
+                        <li><Link href="#">My Account</Link></li>
+                    </ul>
+                </div>
+
+                {/* Stores */}
+                <div>
+                    <h3 className="font-medium mb-3">Stores</h3>
+                    <ul className="space-y-2">
+                        <li><Link href="#">Manhattan</Link></li>
+                        <li><Link href="#">Brooklyn</Link></li>
+                        <li><Link href="#">Tokyo</Link></li>
+                        <li><Link href="#">Jakarta</Link></li>
+                        <li><Link href="#">Paris</Link></li>
+                        <li><Link href="#">Buenos Aires</Link></li>
+                    </ul>
+                </div>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between mt-6 text-xs text-[#6b7b6c] gap-2">
+                <p>
+                    © Designed by <span className="underline">DhuhaCreative</span>. Powered by <span className="font-medium">UI8</span>.
+                </p>
+                <div className="flex gap-4">
+                    <Link href="#">Licenses</Link>
+                    <Link href="#">Privacy</Link>
+                    <Link href="#">Terms</Link>
                 </div>
             </div>
         </footer>
     );
-};
-
-export default Footer;
+}

@@ -8,160 +8,145 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  password     String
-  name         String?
-  role         Role           @default(CUSTOMER)
-  createdAt    DateTime       @default(now())
-  posts        Post[]
+  id        String            @id @default(uuid())
+  email     String            @unique
+  password  String
+  name      String?
+  role      Role              @default(CUSTOMER)
+  createdAt DateTime          @default(now())
+
+  bookings     Booking[]         // Các đơn đặt tour của người dùng
+  messages     ContactMessage[]  @relation("UserMessages") // Tin nhắn liên hệ
   comments     Comment[]
-  notification Notification[]
-  orders Order[] 
+  notifications Notification[]
 }
 
 enum Role {
   ADMIN
   CUSTOMER
 }
-
-model Product {
-  id            String         @id @default(uuid())
+model Tour {
+  id            String        @id @default(cuid())
   name          String
-  description   String?
+  slug          String        @unique
+  address       String
+  description   String
+  duration      Int
+  maxGuests     Int
   price         Float
-  originalPrice Float? // Giá gốc
-  sale          Boolean // Đang giảm giá hay không
-  rating        Float? // Điểm đánh giá trung bình
-  slug          String         @unique // Đường dẫn thân thiện
+  image         String
+  included      String[]
+  notIncluded   String[]
+
+  days          TourInDay[]   @relation("TourDaysBySlug") // 
+  bookings      BookingItem[]
+  reviews       Testimonial[]
+  parkId String?
+park   Park?   @relation(fields: [parkId], references: [id])
+}
+
+model TourInDay {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  slugTour    String   // Khóa ngoại
+  image       String?
+  description String
+
+  tour        Tour     @relation("TourDaysBySlug", fields: [slugTour], references: [slug])
+}
+
+model Testimonial {
+  id       String @id @default(uuid())
+  rating   Int    // 1–5
+  comment  String
+  customer String
+  tourId   String
+  tour     Tour   @relation(fields: [tourId], references: [id])
+}
+
+model Booking {
+  id            String         @id @default(uuid())
+  totalPrice    Float
+  status        BookingStatus  @default(PENDING)
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  imageUrl      String? // Ảnh chính
-  images        ProductImage[] // Liên kết đến nhiều ảnh
-  orderItems    OrderItem[]    @relation("ProductOrderItems")
-  reviews       Review[] // Liên kết đến bảng Review
-  cartItems   CartItem[]
+  name          String
+  email         String
+  phone         String
+  paymentMethod String
+  transactionNo String?
+  paymentTime   DateTime?
+
+  userId        String?
+  user          User?          @relation(fields: [userId], references: [id])
+  bookingItems  BookingItem[]
+  notifications Notification[] // Notification liên quan
+  paymentLog PaymentLog[]
 }
 
-model ProductImage {
-  id        String  @id @default(uuid())
-  url       String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-}
-
-model Review {
-  id         String   @id @default(uuid())
-  content    String // Nội dung đánh giá
-  rating     Int // Điểm đánh giá (1-5)
-  authorName String // Tên người đánh giá
-  createdAt  DateTime @default(now())
-  product    Product  @relation(fields: [productId], references: [id])
-  productId  String
-}
-
-model Order {
-  id             Int            @id @default(autoincrement())
-  totalPrice     Float
-  status         OrderStatus    @default(PENDING)
-  createdAt      DateTime       @default(now())
-  name           String
-  phone          String
-  email          String
-  address        String
-  paymentMethod  String
-  transactionNo  String?
-  paymentTime    DateTime?
-  notifications  Notification[]
-  orderItems     OrderItem[]  // Mối quan hệ 1-n với OrderItem
-
-  // 👇 Thêm mối quan hệ với User
-  userId         String?       // nếu không bắt buộc user phải đăng nhập
-  user           User?         @relation(fields: [userId], references: [id])
-}
-
-model OrderItem {
-  id             Int     @id @default(autoincrement())
-  order          Order   @relation(fields: [orderId], references: [id])
-  orderId        Int
-  product        Product @relation("ProductOrderItems", fields: [productId], references: [id])
-  productId      String
-  quantity       Int     @default(1)
-  productName    String?
-  designType     String
-  drawStyle      String?
-  font           String?
-  customText     String?
-  imageUrl       String
-  selectedOption String?
-}
-
-enum OrderStatus {
+enum BookingStatus {
   PENDING
   PAID
   CONFIRMED
-  SHIPPED
   COMPLETED
   CANCELLED
 }
 
-model Cart {
-  id        String      @id @default(uuid())
-  userId    String?     // Cho phép guest (không cần login)
-  items     CartItem[]
-  createdAt DateTime    @default(now())
+model BookingItem {
+  id        String  @id @default(uuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  tourId    String
+  tour      Tour    @relation(fields: [tourId], references: [id])
+
+  quantity  Int     @default(1)
+  price     Float
 }
 
-model CartItem {
-  id             String   @id @default(uuid())
-  cart           Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  cartId         String
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
 
-  product        Product  @relation(fields: [productId], references: [id])
-  productId      String
-
-  quantity       Int
-  drawStyle      String?   // optional fields cho custom sản phẩm
-  font           String?
-  customText     String?
-  selectedOption String?
-
-  createdAt      DateTime  @default(now())
+  userId    String?
+  user      User?    @relation("UserMessages", fields: [userId], references: [id])
 }
-
 
 model Post {
-  id              String  @id @default(uuid())
+  id              String   @id @default(uuid())
   title           String
-  slug            String  @unique
-  excerpt         String? // Tóm tắt bài viết
+  slug            String   @unique
+  excerpt         String?
   content         String
   imageUrl        String?
   metaTitle       String?
   metaDescription String?
   keywords        String?
   canonicalUrl    String?
-  published       Boolean @default(false)
-  status          String  @default("draft") // draft, published, archived
-  featured        Boolean @default(false) // Bài viết nổi bật
-  likes           Int     @default(0) // Lượt thích
-  views           Int     @default(0)
+  published       Boolean  @default(false)
+  status          String   @default("draft")
+  featured        Boolean  @default(false)
+  likes           Int      @default(0)
+  views           Int      @default(0)
   readingTime     Int?
-  postType        String  @default("article") // article, tutorial, news
+  postType        String   @default("article")
 
-  categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-  tags       Tag[]
-  authorId   String?
-  author     User?     @relation(fields: [authorId], references: [id])
+  categoryId      String?
+  category        Category? @relation("CategoryPosts", fields: [categoryId], references: [id]) // Quan hệ Category
+  tags            Tag[]     @relation("PostTags")  // Quan hệ Tag
 
-  images   PostImage[] // Quan hệ với bảng PostImage
-  comments Comment[] // Quan hệ với bảng Comment
-  viewsLog PostView[] // Quan hệ với bảng PostView
+  images          PostImage[] // Quan hệ với PostImage
+  comments        Comment[]   // Quan hệ với Comment
+  viewsLog        PostView[] // Quan hệ với PostView
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
+
 
 model PostImage {
   id        Int      @id @default(autoincrement()) // ID duy nhất, tự động tăng
@@ -176,27 +161,31 @@ model PostImage {
 }
 
 model Category {
-  id    String @id @default(uuid())
-  name  String @unique
-  slug  String @unique
-  posts Post[]
+  id    String  @id @default(uuid())
+  name  String  @unique
+  slug  String  @unique
+  posts Post[]  @relation("CategoryPosts") // Quan hệ ngược lại từ Category tới Post
 }
-
 model Tag {
   id    String @id @default(uuid())
   name  String @unique
   slug  String @unique
-  posts Post[]
+
+  // Sửa tại đây
+  posts Post[] @relation("PostTags")
 }
+
 
 model Comment {
   id        String   @id @default(uuid())
   postId    String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
+
   content   String
-  status    String   @default("pending") // pending, approved, spam
+  status    String   @default("pending")
   createdAt DateTime @default(now())
 }
 
@@ -204,6 +193,7 @@ model PostView {
   id        String   @id @default(uuid())
   postId    String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
   ip        String
   userAgent String
   createdAt DateTime @default(now())
@@ -216,9 +206,89 @@ model Notification {
   seen      Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+}
+
+model PaymentLog {
+  id          String   @id @default(uuid())
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+
+  method      String
+  status      String
+  amount      Float
+  transactionNo String?
+  response    String?
+  createdAt   DateTime @default(now())
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question String
+  answer   String
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  image       String?
+  createdAt   DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Donation {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  amount        Float
+  message       String?
+  paymentMethod String
+  transactionNo String?
+  paymentTime   DateTime?
+  createdAt     DateTime @default(now())
+}
+
+model ImageByPark {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  altText   String?
+  parkId    String?
+  park      Park?     @relation(fields: [parkId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Park {
+  id          String       @id @default(uuid())
+  name        String
+  slug        String       @unique
+  description String
+  location    String
+  image       String?
+  createdAt   DateTime     @default(now())
+  zoneId      String
+  zone        Zone         @relation(fields: [zoneId], references: [id])
+  tours       Tour[]
+  images      ImageByPark[] // Mối quan hệ với bảng ImageByPark
+}
+
+model Zone {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  parks     Park[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

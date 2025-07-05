@@ -44,7 +44,7 @@ export default function OrderEditPage() {
 
         const fetchOrder = async () => {
             try {
-                const response = await axios.get(`/api/orders/${id}`);
+                const response = await axios.get(`/api/booking/${id}`);
                 setOrder(response.data.order);
             } catch (error) {
                 console.error("Lỗi khi lấy đơn hàng:", error);
@@ -65,7 +65,7 @@ export default function OrderEditPage() {
         if (!order) return;
         setSaving(true);
         try {
-            await axios.put(`/api/orders/${id}`, order);
+            await axios.put(`/api/booking/${id}`, order);
             alert("Cập nhật thành công!");
             router.push("/admin/orders");
         } catch (error) {

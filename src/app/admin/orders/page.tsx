@@ -24,7 +24,7 @@ export default function AdminOrdersPage() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await fetch("/api/orders");
+                const res = await fetch("/api/booking");
                 const data = await res.json();
 
                 if (data.success && Array.isArray(data.orders)) {
@@ -50,7 +50,7 @@ export default function AdminOrdersPage() {
         setDeleting(orderId);
 
         try {
-            const res = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
+            const res = await fetch(`/api/booking/${orderId}`, { method: "DELETE" });
             if (res.ok) {
                 setOrders((prev) => prev.filter((order) => order.id !== orderId));
                 alert("Xóa đơn hàng thành công!");
