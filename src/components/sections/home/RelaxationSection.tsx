@@ -16,7 +16,7 @@ export default function TraditionalSkincare() {
                 <h2 className={`${cormorant.className} text-5xl font-semibold text-[#314631] leading-snug mb-6 text-center `}>
                     Inspired by traditional <br /> knowledge and nature
                 </h2>
-                <div className="relative w-[577px] h-[350px]">
+                <div className="relative w-[300px] h-[200px] md:w-[577px] md:h-[350px]">
                     <Image
                         src="/images/green-powder.png"
                         alt="Green Powder"
