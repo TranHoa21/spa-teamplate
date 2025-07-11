@@ -66,7 +66,7 @@ export default function Footer() {
             {/* Bottom Bar */}
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between mt-6 text-xs text-[#6b7b6c] gap-2">
                 <p>
-                    © Designed by <span className="underline">DhuhaCreative</span>. Powered by <span className="font-medium">UI8</span>.
+                    © Designed by <span className="underline">Thanh Hoa Tran</span>.
                 </p>
                 <div className="flex gap-4">
                     <Link href="#">Licenses</Link>

@@ -93,7 +93,7 @@ export default function HeroSection() {
                     'left-1/2 -translate-x-1/2' // Mobile center
                 )}
             >
-                <div className="relative w-[220px] h-[400px] md:w-[340px] md:h-[620px]">
+                <div className="relative w-[160px] h-[280px] md:w-[340px] md:h-[620px]">
                     <Image
                         src={products[current]}
                         alt="product"
